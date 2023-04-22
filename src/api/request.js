@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const service = axios.create({
-    baseURL: "http://localhost:8080"
+    baseURL: "http://10.19.131.142:8080"
   })
   
   // 请求拦截器

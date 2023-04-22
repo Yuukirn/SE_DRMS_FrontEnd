@@ -61,7 +61,8 @@ export default defineComponent({
             email: formState.email,
             password: "",
           });
-          if (resp.data.msg === "registered") {
+          console.log(resp.data.msg);
+          if (resp.data.data === "registered") {
             message.warning("该邮箱已被注册！");
           } else {
             message.success("验证码发送成功！");
@@ -82,7 +83,6 @@ export default defineComponent({
     };
     const validateMessages = {
       required: "请您输入${label}!",
-      len: "${label}必须在",
       types: {
         email: "${label}格式错误!",
       },
