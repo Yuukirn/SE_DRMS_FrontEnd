@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { useJWT } from "@/store/JWT"
 
 const service = axios.create({
     baseURL: "http://10.19.131.142:8080"
@@ -7,9 +8,10 @@ const service = axios.create({
   // 请求拦截器
   service.interceptors.request.use(
     (config)=>{
+      console.log(useJWT);
       config.headers = {
         //jwt
-        Authorization: 'aaa.bbb.ccc'
+        // Authorization: useJWT
       }
       return config
     },

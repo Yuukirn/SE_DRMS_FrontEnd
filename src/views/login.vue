@@ -50,6 +50,7 @@ import { UserOutlined, LockOutlined } from "@ant-design/icons-vue";
 import { message } from "ant-design-vue";
 import router from "@/router";
 import service from "@/api/request";
+import { useJWT } from "@/store/JWT";
 export default defineComponent({
   components: {
     UserOutlined,
@@ -69,7 +70,10 @@ export default defineComponent({
         password: values.password,
       });
       if (resp.data.msg !== "ok") message.error(resp.data.msg);
-      else message.success("登陆成功！");
+      else {
+        Object.assign(resp.data, useJWT);
+        message.success("登陆成功！");
+      }
     };
     const onFinishFailed = (errorInfo) => {
       message.error("Failed:", errorInfo);
