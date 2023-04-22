@@ -62,7 +62,6 @@ export default defineComponent({
       password: "",
     });
     const onFinish = async (values) => {
-      console.log(values);
       const resp = await service.post("/login", {
         id: 0,
         name: "",
@@ -70,6 +69,7 @@ export default defineComponent({
         password: values.password,
       });
       if (resp.data.msg !== "ok") message.error(resp.data.msg);
+      else message.success("登陆成功！");
     };
     const onFinishFailed = (errorInfo) => {
       message.error("Failed:", errorInfo);
