@@ -1,5 +1,7 @@
 import axios from 'axios'
 import { useJWT } from "@/store/JWT"
+import { message } from 'ant-design-vue'
+import router from '@/router'
 
 const service = axios.create({
     baseURL: "http://10.19.131.142:8080"
@@ -8,10 +10,9 @@ const service = axios.create({
   // 请求拦截器
   service.interceptors.request.use(
     (config)=>{
-      console.log(useJWT);
       config.headers = {
         //jwt
-        // Authorization: useJWT
+        Authorization: useJWT().token
       }
       return config
     },
@@ -26,9 +27,17 @@ const service = axios.create({
       if(response.data.code === 200) {
         return response
       }     
-    //   else if(response.data.code === 401) {       
-    //     return Promise.resolve({})
-    //   }
+      else if(response.data.code === 401) { 
+        var msg = response.data.msg;
+        if(msg === 'no token'){
+          message.error("您未登录！")
+        }
+        else if(msg === 'token expire'){
+          message.error("登录失效！");
+        }
+        router.push({path: '/login'})
+        return Promise.resolve({})
+      }
     },
     (error)=>{
       console.error(error)

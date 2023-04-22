@@ -71,7 +71,10 @@ export default defineComponent({
       });
       if (resp.data.msg !== "ok") message.error(resp.data.msg);
       else {
-        Object.assign(resp.data, useJWT);
+        var token = resp.data.data;
+        if (token !== null) {
+          useJWT().token = token;
+        }
         message.success("登陆成功！");
       }
     };
