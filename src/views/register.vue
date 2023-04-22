@@ -61,7 +61,6 @@ export default defineComponent({
             email: formState.email,
             password: "",
           });
-          console.log(resp.data.msg);
           if (resp.data.data === "registered") {
             message.warning("该邮箱已被注册！");
           } else {

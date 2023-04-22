@@ -1,24 +1,13 @@
-# template
+# DRMS
 
-## Project setup
+## 初始化项目
 ```
+拉取完仓库后在终端输入指令：
 npm install
 ```
 
-### Compiles and hot-reloads for development
+### 启动服务器
 ```
+在终端输入指令：
 npm run serve
 ```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
