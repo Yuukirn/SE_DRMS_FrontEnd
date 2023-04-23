@@ -7,48 +7,52 @@
     :validate-messages="validateMessages"
     @finish="onFinish"
   >
-    <a-form-item name="name" label="用户名" :rules="[{ required: true }]">
-      <a-input v-model:value="formState.name" />
-    </a-form-item>
-    <a-form-item name="password" label="密码" :rules="[{ required: true }]">
-      <a-input v-model:value="formState.password" />
-    </a-form-item>
-    <a-form-item
-      name="email"
-      label="邮箱"
-      :rules="[
-        {
-          required: true,
-          type: 'email',
-        },
-      ]"
-    >
-      <a-input v-model:value="formState.email" />
-    </a-form-item>
-    <a-form-item :wrapper-col="{ ...layout.wrapperCol, offset: 8 }">
-      <a-button type="primary" @click="sendcode">发送验证码</a-button>
-    </a-form-item>
-    <a-form-item
-      name="code"
-      label="验证码"
-      :rules="[
-        {
-          required: true,
-          len: 6,
-        },
-      ]"
-    >
-      <a-input v-model:value="formState.code" />
-    </a-form-item>
-    <a-form-item :wrapper-col="{ ...layout.wrapperCol, offset: 8 }">
-      <a-button type="primary" html-type="submit">注册</a-button>
-    </a-form-item>
+    <a-space direction="vertical" style="margin: 10%">
+      <a-form-item name="name" label="用户名" :rules="[{ required: true }]">
+        <a-input v-model:value="formState.name" />
+      </a-form-item>
+      <a-form-item name="password" label="密码" :rules="[{ required: true }]">
+        <a-input v-model:value="formState.password" />
+      </a-form-item>
+      <a-form-item
+        name="email"
+        label="邮箱"
+        :rules="[
+          {
+            required: true,
+            type: 'email',
+          },
+        ]"
+      >
+        <a-input v-model:value="formState.email" />
+      </a-form-item>
+      <a-form-item :wrapper-col="{ ...layout.wrapperCol, offset: 8 }">
+        <a-button type="primary" @click="sendcode">发送验证码</a-button>
+      </a-form-item>
+      <a-form-item
+        name="code"
+        label="验证码"
+        :rules="[
+          {
+            required: true,
+            len: 6,
+          },
+        ]"
+      >
+        <a-input v-model:value="formState.code" />
+      </a-form-item>
+      <a-form-item :wrapper-col="{ ...layout.wrapperCol, offset: 8 }">
+        <a-button type="primary" html-type="submit">注册</a-button>
+      </a-form-item>
+    </a-space>
   </a-form>
 </template>
 <script>
 import { defineComponent, reactive, ref } from "vue";
 import { message } from "ant-design-vue";
+import router from "@/router";
 import service from "@/api/request";
+
 export default defineComponent({
   setup() {
     const formRef = ref();
@@ -104,6 +108,7 @@ export default defineComponent({
       });
       if (resp.data.msg === "ok") {
         message.success("注册成功！");
+        router.push("/login");
       } else {
         message.error("验证码错误！");
       }

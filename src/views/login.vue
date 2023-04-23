@@ -6,42 +6,46 @@
     @finish="onFinish"
     @finishFailed="onFinishFailed"
   >
-    <a-form-item
-      label="邮箱"
-      name="email"
-      :rules="[{ required: true, message: '请输入您的邮箱!' }]"
-    >
-      <a-input v-model:value="formState.email">
-        <template #prefix>
-          <UserOutlined class="site-form-item-icon" />
-        </template>
-      </a-input>
-    </a-form-item>
-
-    <a-form-item
-      label="密码"
-      name="password"
-      :rules="[{ required: true, message: '请输入您的密码!' }]"
-    >
-      <a-input-password v-model:value="formState.password">
-        <template #prefix>
-          <LockOutlined class="site-form-item-icon" />
-        </template>
-      </a-input-password>
-    </a-form-item>
-
-    <a-form-item>
-      <a-button
-        :disabled="disabled"
-        type="primary"
-        html-type="submit"
-        class="login-form-button"
+    <a-space direction="vertical" style="margin: 10%">
+      <a-form-item
+        label="邮箱"
+        name="email"
+        :rules="[{ required: true, message: '请输入您的邮箱!' }]"
       >
-        登录
-      </a-button>
-      如果没有账户，
-      <router-link to="/register">注册</router-link>
-    </a-form-item>
+        <a-input v-model:value="formState.email">
+          <template #prefix>
+            <UserOutlined class="site-form-item-icon" />
+          </template>
+        </a-input>
+      </a-form-item>
+
+      <a-form-item
+        label="密码"
+        name="password"
+        :rules="[{ required: true, message: '请输入您的密码!' }]"
+      >
+        <a-input-password v-model:value="formState.password">
+          <template #prefix>
+            <LockOutlined class="site-form-item-icon" />
+          </template>
+        </a-input-password>
+      </a-form-item>
+
+      <a-form-item>
+        <a-button
+          :disabled="disabled"
+          type="primary"
+          html-type="submit"
+          class="login-form-button"
+        >
+          登录
+        </a-button>
+        <a-form-item>
+          如果没有账户，
+          <router-link to="/register">注册</router-link>
+        </a-form-item>
+      </a-form-item>
+    </a-space>
   </a-form>
 </template>
 <script>
@@ -50,7 +54,9 @@ import { UserOutlined, LockOutlined } from "@ant-design/icons-vue";
 import { message } from "ant-design-vue";
 import router from "@/router";
 import service from "@/api/request";
-import { useJWT } from "@/store/JWT";
+import { useUserStore } from "@/store/user";
+import { Local } from "@/utils/local";
+
 export default defineComponent({
   components: {
     UserOutlined,
@@ -73,9 +79,13 @@ export default defineComponent({
       else {
         var token = resp.data.data;
         if (token !== null) {
-          useJWT().token = token;
+          var user = { id: 0, token: token };
+          console.log(user);
+          Local.set("user", user);
+          useUserStore().setUser(user);
         }
         message.success("登陆成功！");
+        router.push({ path: "/projects" });
       }
     };
     const onFinishFailed = (errorInfo) => {

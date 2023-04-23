@@ -1,6 +1,16 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 
 const routes = [
+  {
+    path: '/projects',
+    name: 'projects',
+    // children:[
+    //   {
+
+    //   },
+    // ],
+    component: () => import('../views/projects.vue')
+  },
     {
       path: '/login',
       name: 'login',
@@ -10,6 +20,10 @@ const routes = [
       path: '/register',
       name: 'register',
       component: () => import('../views/register.vue')
+    },
+    {
+      path: '/:pathMatcher(.*)*',
+      redirect: '/projects',
     },
 ]
 

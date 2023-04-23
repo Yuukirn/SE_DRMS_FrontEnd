@@ -1,10 +1,10 @@
 import axios from 'axios'
-import { useJWT } from "@/store/JWT"
+import { useUserStore } from "@/store/user"
 import { message } from 'ant-design-vue'
 import router from '@/router'
 
 const service = axios.create({
-    baseURL: "http://10.19.131.142:8080"
+    baseURL: "http://localhost:8080"
   })
   
   // 请求拦截器
@@ -12,7 +12,7 @@ const service = axios.create({
     (config)=>{
       config.headers = {
         //jwt
-        Authorization: useJWT().token
+        Authorization: useUserStore().user.token
       }
       return config
     },
