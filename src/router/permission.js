@@ -8,7 +8,7 @@ router.beforeEach((to,from,next)=>{
     var token = useUserStore().user.token;
     if(token !== null && token !== ''){
         if(to.path === '/login'){
-            next('/projects')
+            next('/home')
         }
         else{
             next()

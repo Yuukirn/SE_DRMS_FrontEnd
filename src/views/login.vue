@@ -1,52 +1,58 @@
 <template>
-  <a-form
-    :model="formState"
-    name="normal_login"
-    class="login-form"
-    @finish="onFinish"
-    @finishFailed="onFinishFailed"
-  >
-    <a-space direction="vertical" style="margin: 10%">
-      <a-form-item
-        label="邮箱"
-        name="email"
-        :rules="[{ required: true, message: '请输入您的邮箱!' }]"
+  <a-layout style="min-height: 100vh">
+    <a-layout-header style="background-color: white"> </a-layout-header>
+    <a-layout-content>
+      <a-form
+        :model="formState"
+        name="normal_login"
+        class="login-form"
+        @finish="onFinish"
+        @finishFailed="onFinishFailed"
       >
-        <a-input v-model:value="formState.email">
-          <template #prefix>
-            <UserOutlined class="site-form-item-icon" />
-          </template>
-        </a-input>
-      </a-form-item>
+        <a-space direction="vertical" style="width: 30%; margin: 15%">
+          <a-form-item
+            label="邮箱"
+            name="email"
+            :rules="[{ required: true, message: '请输入您的邮箱!' }]"
+          >
+            <a-input v-model:value="formState.email">
+              <template #prefix>
+                <UserOutlined class="site-form-item-icon" />
+              </template>
+            </a-input>
+          </a-form-item>
 
-      <a-form-item
-        label="密码"
-        name="password"
-        :rules="[{ required: true, message: '请输入您的密码!' }]"
-      >
-        <a-input-password v-model:value="formState.password">
-          <template #prefix>
-            <LockOutlined class="site-form-item-icon" />
-          </template>
-        </a-input-password>
-      </a-form-item>
+          <a-form-item
+            label="密码"
+            name="password"
+            style="width: 100%"
+            :rules="[{ required: true, message: '请输入您的密码!' }]"
+          >
+            <a-input-password v-model:value="formState.password">
+              <template #prefix>
+                <LockOutlined class="site-form-item-icon" />
+              </template>
+            </a-input-password>
+          </a-form-item>
 
-      <a-form-item>
-        <a-button
-          :disabled="disabled"
-          type="primary"
-          html-type="submit"
-          class="login-form-button"
-        >
-          登录
-        </a-button>
-        <a-form-item>
-          如果没有账户，
-          <router-link to="/register">注册</router-link>
-        </a-form-item>
-      </a-form-item>
-    </a-space>
-  </a-form>
+          <a-form-item>
+            <a-button
+              :disabled="disabled"
+              type="primary"
+              html-type="submit"
+              class="login-form-button"
+            >
+              登录
+            </a-button>
+            <a-form-item>
+              如果没有账户，
+              <router-link to="/register">注册</router-link>
+            </a-form-item>
+          </a-form-item>
+        </a-space>
+      </a-form>
+    </a-layout-content>
+  </a-layout>
 </template>
 <script>
 import { defineComponent, reactive, computed } from "vue";
@@ -77,14 +83,14 @@ export default defineComponent({
       });
       if (resp.data.msg !== "ok") message.error(resp.data.msg);
       else {
-        var token = resp.data.data;
-        if (token !== null) {
-          var user = { id: 0, token: token };
-          console.log(user);
+        var data = resp.data.data;
+        if (data.token !== null) {
+          var user = { id: data.user_id, token: data.token };
           Local.set("user", user);
           useUserStore().setUser(user);
         }
         message.success("登陆成功！");
+
         router.push({ path: "/projects" });
       }
     };
