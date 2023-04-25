@@ -4,57 +4,82 @@
       <a-page-header style="height: 100%" title="返回" @back="back" />
     </a-layout-header>
     <a-layout-content>
-      <a-form
-        ref="formRef"
-        :model="formState"
-        v-bind="layout"
-        name="loginForm"
-        :validate-messages="validateMessages"
-        @finish="onFinish"
-      >
-        <a-space direction="vertical" style="width: 30%; margin: 10% 10% 0% 0%">
-          <a-form-item name="name" label="用户名" :rules="[{ required: true }]">
-            <a-input v-model:value="formState.name" />
-          </a-form-item>
-          <a-form-item
-            name="password"
-            label="密码"
-            :rules="[{ required: true }]"
+      <template v-if="!success">
+        <a-form
+          ref="formRef"
+          :model="formState"
+          v-bind="layout"
+          name="loginForm"
+          :validate-messages="validateMessages"
+          @finish="onFinish"
+        >
+          <a-space
+            direction="vertical"
+            style="width: 30%; margin: 10% 10% 0% 0%"
           >
-            <a-input v-model:value="formState.password" />
-          </a-form-item>
-          <a-form-item
-            name="email"
-            label="邮箱"
-            :rules="[
-              {
-                required: true,
-                type: 'email',
-              },
-            ]"
-          >
-            <a-input v-model:value="formState.email" />
-          </a-form-item>
-          <a-form-item :wrapper-col="{ ...layout.wrapperCol, offset: 8 }">
-            <a-button type="primary" @click="sendcode">发送验证码</a-button>
-          </a-form-item>
-          <a-form-item
-            name="code"
-            label="验证码"
-            :rules="[
-              {
-                required: true,
-                len: 6,
-              },
-            ]"
-          >
-            <a-input v-model:value="formState.code" />
-          </a-form-item>
-          <a-form-item :wrapper-col="{ ...layout.wrapperCol, offset: 8 }">
-            <a-button type="primary" html-type="submit">注册</a-button>
-          </a-form-item>
-        </a-space>
-      </a-form>
+            <a-form-item
+              name="name"
+              label="用户名"
+              :rules="[{ required: true }]"
+            >
+              <a-input v-model:value="formState.name" />
+            </a-form-item>
+            <a-form-item
+              name="password"
+              label="密码"
+              :rules="[{ required: true }]"
+            >
+              <a-input v-model:value="formState.password" />
+            </a-form-item>
+            <a-form-item
+              name="email"
+              label="邮箱"
+              :rules="[
+                {
+                  required: true,
+                  type: 'email',
+                },
+              ]"
+            >
+              <a-input v-model:value="formState.email" />
+            </a-form-item>
+            <a-form-item :wrapper-col="{ ...layout.wrapperCol, offset: 8 }">
+              <a-button type="primary" @click="sendcode">发送验证码</a-button>
+            </a-form-item>
+            <a-form-item
+              name="code"
+              label="验证码"
+              :rules="[
+                {
+                  required: true,
+                  len: 6,
+                },
+              ]"
+            >
+              <a-input v-model:value="formState.code" />
+            </a-form-item>
+            <a-form-item :wrapper-col="{ ...layout.wrapperCol, offset: 8 }">
+              <a-button type="primary" html-type="submit">注册</a-button>
+            </a-form-item>
+          </a-space>
+        </a-form>
+      </template>
+      <template v-else>
+        <a-result status="success" title="注册成功!" style="margin: 10% 0% 0%">
+          <template #extra>
+            <a-button
+              key="console"
+              type="primary"
+              @click="
+                () => {
+                  router.push('/login');
+                }
+              "
+              >去登录</a-button
+            >
+          </template>
+        </a-result>
+      </template>
     </a-layout-content>
   </a-layout>
 </template>
@@ -110,6 +135,7 @@ export default defineComponent({
       email: "",
       password: "",
     });
+    let success = ref(false);
     const onFinish = async (values) => {
       const resp = await service.post("/register", {
         code: values.code,
@@ -118,8 +144,7 @@ export default defineComponent({
         password: values.password,
       });
       if (resp.data.msg === "ok") {
-        message.success("注册成功！");
-        router.push("/login");
+        success.value = true;
       } else {
         message.error("验证码错误！");
       }
@@ -135,6 +160,8 @@ export default defineComponent({
       sendcode,
       formRef,
       back,
+      success,
+      router,
     };
   },
 });

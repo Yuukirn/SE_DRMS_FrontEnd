@@ -39,8 +39,9 @@
             </template>
           </a-menu>
         </a-layout-content>
+
         <a-layout-footer class="sider_footer">
-          <a-button type="primary" size="large" @click="createProject">
+          <a-button type="primary" size="large" @click="showDrawer">
             新建方案
           </a-button>
         </a-layout-footer>
@@ -69,18 +70,108 @@
             </a-layout-content>
           </a-layout>
         </template>
+        <template v-else>
+          <a-empty style="margin: 30%" :description="null" />
+        </template>
       </a-layout-content>
     </a-layout>
   </a-layout>
+
+  <a-drawer
+    title="新建项目"
+    :width="720"
+    :visible="visible"
+    :body-style="{ paddingBottom: '80px' }"
+    :footer-style="{ textAlign: 'rigth' }"
+    @close="onClose"
+  >
+    <a-form
+      :model="projectForm"
+      :rules="rules"
+      v-bind="layout"
+      @finish="createProject"
+    >
+      <a-form-item label="项目id" name="id">
+        <a-input-number v-model:value="projectForm.id" :min="1" />
+      </a-form-item>
+
+      <a-form-item label="项目名称" name="name">
+        <a-input
+          v-model:value="projectForm.name"
+          placeholder="请输入项目名称"
+        />
+      </a-form-item>
+
+      <a-form-item label="项目类型" name="type">
+        <a-select v-model:value="projectForm.type" placeholder="请选择一个类型">
+          <a-select-option value="0">0</a-select-option>
+          <a-select-option value="1">1</a-select-option>
+        </a-select>
+      </a-form-item>
+
+      <a-form-item label="项目详情" name="description">
+        <a-textarea
+          v-model:value="projectForm.description"
+          :rows="4"
+          placeholder="请输入项目详情"
+        />
+      </a-form-item>
+      <a-form-item :wrapper-col="{ ...layout.wrapperCol, offset: 12 }">
+        <a-button type="primary" html-type="submit">创建</a-button>
+      </a-form-item>
+    </a-form>
+  </a-drawer>
 </template>
 <script>
 import router from "@/router";
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, reactive } from "vue";
 import service from "@/api/request";
 import { useProjectStore } from "@/store/project";
+import { useUserStore } from "@/store/user";
+import { message } from "ant-design-vue";
 export default defineComponent({
   components: {},
   setup() {
+    const projectForm = reactive({
+      id: "",
+      name: "",
+      type: "",
+      description: "",
+      userId: useUserStore().user.id,
+    });
+    const rules = {
+      id: [
+        {
+          required: true,
+          message: "项目id不能为空！",
+        },
+      ],
+      name: [
+        {
+          required: true,
+          message: "项目名称不能为空！",
+        },
+      ],
+      type: [
+        {
+          required: true,
+          message: "项目类型不能为空！",
+        },
+      ],
+      description: [
+        {
+          required: true,
+          message: "项目描述不能为空！",
+        },
+      ],
+    };
+    const visible = ref(false);
+    const showDrawer = () => {
+      visible.value = true;
+    };
+    const onClose = () => {
+      visible.value = false;
+    };
     let projects = ref(null);
     useProjectStore().setProject(null);
     let show = ref(false);
@@ -117,7 +208,14 @@ export default defineComponent({
       }
     };
     getProjects(null);
-    const createProject = () => {};
+
+    const createProject = async () => {
+      const resp = await service.post("/projects/create", projectForm);
+      message.success("项目创建成功！");
+      getProjects(null);
+      visible.value = false;
+    };
+
     const viewProject = (key) => {
       project.value = projects.value[key - 1];
       useProjectStore().setProject({
@@ -131,6 +229,14 @@ export default defineComponent({
     const onSearch = (searchValue) => {
       getProjects(searchValue);
     };
+    const layout = {
+      labelCol: {
+        span: 3,
+      },
+      wrapperCol: {
+        span: 30,
+      },
+    };
     return {
       selectedKeys: ref(["4"]),
       projects,
@@ -141,6 +247,12 @@ export default defineComponent({
       show,
       value,
       onSearch,
+      projectForm,
+      rules,
+      visible,
+      showDrawer,
+      onClose,
+      layout,
     };
   },
 });
