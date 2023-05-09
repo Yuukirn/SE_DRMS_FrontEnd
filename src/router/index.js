@@ -17,7 +17,7 @@ const routes = [
       component: () => import('../views/register.vue')
     },
     {
-      path: '/project',
+      path: '/project/:projectId',
       name: 'project',
       children:[
 				{

@@ -28,11 +28,7 @@
           />
           <a-menu v-model:selectedKeys="selectedKeys" mode="inline">
             <template v-for="project of projects">
-              <a-menu-item
-                v-if="project.id"
-                :key="project.id"
-                @click="viewProject(project)"
-              >
+              <a-menu-item v-if="project.id" :key="project.id">
                 <span class="nav-text">{{ project.name }}</span>
               </a-menu-item>
             </template>
@@ -47,7 +43,7 @@
       </a-layout>
     </a-layout-sider>
     <a-layout style="margin: 0% 5% 0%" :style="{ marginLeft: '35%' }">
-      <template v-if="project !== null">
+      <!-- <template v-if="project !== null">
         <a-layout-header class="content_header">{{
           project.name
         }}</a-layout-header>
@@ -74,9 +70,21 @@
             进入项目
           </a-button>
         </a-layout-footer>
-      </template>
-      <template v-else>
+      </template> -->
+      <!-- <template v-else>
         <a-empty style="margin: 30%" :description="null" />
+      </template> -->
+      <template v-if="projects !== null">
+        <a-list :grid="{ gutter: 16, column: 4 }" :data-source="projects">
+          <template #renderItem="{ item }">
+            <a-list-item>
+              <a-card :title="item.name">
+                <template #extra><a @click="toProject(item)">进入</a></template
+                >{{ item.description }}
+              </a-card>
+            </a-list-item>
+          </template>
+        </a-list>
       </template>
     </a-layout>
   </a-layout>
@@ -126,7 +134,6 @@
 import router from "@/router";
 import { defineComponent, ref, reactive } from "vue";
 import service from "@/api/request";
-import { useProjectStore } from "@/store/project";
 import { useUserStore } from "@/store/user";
 import { message } from "ant-design-vue";
 export default defineComponent({
@@ -171,24 +178,21 @@ export default defineComponent({
     const onClose = () => {
       visible.value = false;
     };
-    let projects = ref(null);
-    useProjectStore().setProject(null);
-    let project = ref(null);
+    let projects = ref([]);
     const getProjects = async (name) => {
       var resp;
       if (name === null || name === "") {
         resp = await service.get("/projects");
       } else {
-        resp = await service.get("/projects/" + name);
+        resp = await service.get("/projects/search/" + name);
       }
       var arr;
       if (resp === null) {
         arr = [];
-        projects.value = arr;
       } else {
         arr = resp.data.data;
-        projects.value = arr;
       }
+      projects.value = arr;
     };
     getProjects(null);
     const createProject = async () => {
@@ -198,10 +202,6 @@ export default defineComponent({
       visible.value = false;
     };
 
-    const viewProject = (value) => {
-      project.value = value;
-      useProjectStore().setProject(value);
-    };
     //搜索
     const value = ref("");
     const onSearch = (searchValue) => {
@@ -215,12 +215,18 @@ export default defineComponent({
         span: 30,
       },
     };
+
+    const test = (value) => {
+      console.log(value);
+    };
+
+    const toProject = (project) => {
+      router.push({ name: "project", params: { projectId: project.id } });
+    };
     return {
       selectedKeys: ref(["4"]),
       projects,
-      project,
       getProjects,
-      viewProject,
       createProject,
       value,
       onSearch,
@@ -231,6 +237,9 @@ export default defineComponent({
       onClose,
       layout,
       router,
+
+      test,
+      toProject,
     };
   },
 });
@@ -252,10 +261,10 @@ export default defineComponent({
   background-color: rgb(255, 255, 255);
 }
 .ant-layout-content {
-  background-color: rgb(241, 241, 241);
+  background-color: rgb(255, 255, 255);
 }
 .content_header {
-  background-color: rgb(241, 241, 241);
+  background-color: rgb(255, 255, 255);
   text-align: left;
   font-size: 32px;
   margin: 5% 0% 0%;

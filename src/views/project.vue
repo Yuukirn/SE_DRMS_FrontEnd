@@ -44,67 +44,24 @@
             <!-- 编辑类别按钮 -->
             <div>
               <!-- 编辑类别弹窗 -->
-              <a-dropdown :overlayStyle="{ minWidth: 900 }">
-                <plus-circle-outlined style="font-size: 20px" />
-                <template #overlay>
-                  <a-menu
-                    :style="{
-                      width: '140px',
-                    }"
-                  >
-                    <a-menu-item
-                      key="1"
-                      style="font-size: 16px"
-                      @click="showCreateCategory"
-                    >
-                      <plus-outlined style="font-size: 16px" />
-                      新建类别
-                    </a-menu-item>
-                    <a-menu-item
-                      key="2"
-                      style="font-size: 16px"
-                      @click="showDeleteCategory"
-                    >
-                      <delete-outlined style="font-size: 16px" />
-                      删除类别
-                    </a-menu-item>
-                  </a-menu>
-                </template>
-              </a-dropdown>
-              <!-- 删除类别 -->
-              <a-modal
-                v-model:visible="deleteCategoryVisible"
-                title="选择删除类别"
-                ok-text="删除"
-                cancel-text="取消"
-                @ok="deleteCategoryOk"
-              >
-                <a-select
-                  v-model:value="deleteCategoryValue"
-                  mode="multiple"
-                  style="width: 80%"
-                  placeholder="选择要删除的类别"
-                  :options="
-                    categories.map((category) => ({
-                      value: category.name,
-                    }))
-                  "
-                ></a-select>
-              </a-modal>
-              <!-- 新建类别 -->
+              <plus-circle-outlined
+                style="font-size: 20px"
+                @click="showCreateCategory"
+              />
+              <!-- 新建/编辑类别 -->
               <a-modal
                 v-model:visible="createCategoryVisible"
-                title="新建类别"
-                ok-text="创建"
+                :title="isEditCategory ? '编辑类别' : '创建类别'"
+                :ok-text="isEditCategory ? '编辑' : '创建'"
                 cancel-text="取消"
-                @ok="hideCreateCategory"
+                @ok="isEditCategory ? hideEditCategory() : hideCreateCategory()"
               >
                 <a-form
                   ref="categoryFormRef"
                   :model="categoryForm"
                   :rules="categoryRules"
                 >
-                  <a-form-item label="项目名称" name="name">
+                  <a-form-item label="案例名称" name="name">
                     <a-input
                       v-model:value="categoryForm.name"
                       placeholder="请输入名称"
@@ -113,6 +70,35 @@
                 </a-form>
               </a-modal>
             </div>
+            <!-- 新建案例 -->
+            <a-modal
+              v-model:visible="createExampleVisible"
+              title="创建案例"
+              ok-text="创建"
+              cancel-text="取消"
+              @ok="hideCreateExample"
+            >
+              <a-form
+                ref="exampleFormRef"
+                :model="exampleForm"
+                :rules="exampleRules"
+              >
+                <a-form-item label="案例名称" name="name">
+                  <a-input
+                    v-model:value="exampleForm.name"
+                    placeholder="请输入名称"
+                  />
+                </a-form-item>
+
+                <a-form-item label="案例详情" name="description">
+                  <a-textarea
+                    v-model:value="exampleForm.description"
+                    :rows="4"
+                    placeholder="请输案例详情"
+                  />
+                </a-form-item>
+              </a-form>
+            </a-modal>
           </a-space>
           <!-- 目录 -->
           <div style="overflow: hidden; margin-top: 16px; height: 496px">
@@ -131,11 +117,85 @@
                   :key="category.name"
                 >
                   {{ category.name }}
+                  <div style="float: right">
+                    <a-dropdown :overlayStyle="{ minWidth: 900 }">
+                      <more-outlined style="font-size: 20px" />
+                      <template #overlay>
+                        <a-menu
+                          :style="{
+                            width: '140px',
+                          }"
+                        >
+                          <a-menu-item
+                            key="1"
+                            style="font-size: 16px"
+                            @click="showCreateExample(category.id)"
+                          >
+                            <plus-outlined style="font-size: 16px" />
+                            新建案例
+                          </a-menu-item>
+                          <a-menu-item
+                            key="2"
+                            style="font-size: 16px"
+                            @click="showEditCategory(category)"
+                          >
+                            <edit-outlined style="font-size: 16px" />
+                            编辑类别
+                          </a-menu-item>
+                          <a-menu-item
+                            key="3"
+                            style="font-size: 16px"
+                            @click="deleteCategory(category.id)"
+                          >
+                            <delete-outlined style="font-size: 16px" />
+                            删除类别
+                          </a-menu-item>
+                        </a-menu>
+                      </template>
+                    </a-dropdown>
+                  </div>
                 </a-menu-item>
                 <a-sub-menu v-else :key="category.name">
-                  <template #title
-                    ><span>{{ category.name }}</span></template
-                  >
+                  <template #title>
+                    <span>{{ category.name }}</span>
+                    <div style="float: right">
+                      <a-dropdown :overlayStyle="{ minWidth: 900 }">
+                        <more-outlined style="font-size: 20px" />
+                        <template #overlay>
+                          <a-menu
+                            :style="{
+                              width: '140px',
+                            }"
+                          >
+                            <a-menu-item
+                              key="1"
+                              style="font-size: 16px"
+                              @click="showCreateExample(category.id)"
+                            >
+                              <plus-outlined style="font-size: 16px" />
+                              新建案例
+                            </a-menu-item>
+                            <a-menu-item
+                              key="2"
+                              style="font-size: 16px"
+                              @click="showEditCategory(category)"
+                            >
+                              <edit-outlined style="font-size: 16px" />
+                              编辑类别
+                            </a-menu-item>
+                            <a-menu-item
+                              key="3"
+                              style="font-size: 16px"
+                              @click="deleteCategory(category.id)"
+                            >
+                              <delete-outlined style="font-size: 16px" />
+                              删除类别
+                            </a-menu-item>
+                          </a-menu>
+                        </template>
+                      </a-dropdown>
+                    </div>
+                  </template>
                   <a-menu-item
                     v-for="example in category.examples"
                     :key="example.id"
@@ -157,9 +217,9 @@
 </template>
 <script scoped>
 import router from "@/router";
-import { defineComponent, ref, reactive } from "vue";
+import { useRoute } from "vue-router";
+import { defineComponent, ref, reactive, watch } from "vue";
 import service from "@/api/request";
-import { useProjectStore } from "@/store/project";
 import { useUserStore } from "@/store/user";
 // 图标
 import {
@@ -167,8 +227,10 @@ import {
   PlusCircleOutlined,
   PlusOutlined,
   DeleteOutlined,
+  MoreOutlined,
+  EditOutlined,
 } from "@ant-design/icons-vue";
-import { Modal, message } from "ant-design-vue";
+import { message } from "ant-design-vue";
 
 export default defineComponent({
   components: {
@@ -176,53 +238,24 @@ export default defineComponent({
     PlusOutlined,
     DeleteOutlined,
     PlusCircleOutlined,
+    MoreOutlined,
+    EditOutlined,
   },
   setup() {
     //所有类别数组
     const categories = ref(null);
-    const pid = useProjectStore().project.id;
-    const projectName = useProjectStore().project.name;
+    let pid = useRoute().params.projectId;
+    const projectName = ref("");
 
-    // 删除案例文件确认框
-    const showConfirm = () => {
-      Modal.confirm({
-        title: "删除此案例文件?",
-        icon: createVNode(ExclamationCircleOutlined),
-        content: "删除后无法恢复",
-        okText: "确认",
-        okType: "danger",
-        cancelText: "取消",
-        onOk() {
-          console.log("确认");
-        },
-        onCancel() {
-          console.log("取消");
-        },
-        class: "test",
-      });
-    };
-    // 删除类别确认框
-    const deleteCategoryValue = ref([]);
-    const deleteCategoryVisible = ref(false);
-    const showDeleteCategory = () => {
-      deleteCategoryVisible.value = true;
-    };
-    const deleteCategoryOk = async () => {
-      let nameArr = deleteCategoryValue.value;
-      let arr = categories.value.filter((category) => {
-        return nameArr.includes(category.name);
-      });
-
-      await service.post("/categories/delete", arr);
-      getAllCategories();
-
-      deleteCategoryValue.value = [];
-      deleteCategoryVisible.value = false;
+    const deleteCategory = async (id) => {
+      await service.delete("/categories/" + id);
+      searchCategories();
     };
 
     //新建类别
     const createCategoryVisible = ref(false);
     const showCreateCategory = () => {
+      isEditCategory.value = false;
       createCategoryVisible.value = true;
     };
     const hideCreateCategory = () => {
@@ -233,7 +266,7 @@ export default defineComponent({
 
           await service.post("/categories/create", categoryForm);
           message.success("类别创建成功！");
-          getAllCategories();
+          searchCategories();
 
           categoryFormRef.value.resetFields();
         })
@@ -244,7 +277,7 @@ export default defineComponent({
     const categoryFormRef = ref();
     const categoryForm = reactive({
       name: "",
-      projectId: useProjectStore().project.id,
+      projectId: pid,
       userId: useUserStore().user.id,
     });
     const categoryRules = {
@@ -270,7 +303,10 @@ export default defineComponent({
     const searchValue = ref("");
     const searchCategories = async () => {
       let name = searchValue.value;
-      if (name === null || name === "") return;
+      if (name === null || name === "") {
+        getAllCategories();
+        return;
+      }
       var resp = await service.get("/search/" + pid + "&" + name);
       if (resp === null) {
         categories.value = [];
@@ -287,21 +323,101 @@ export default defineComponent({
       });
     };
 
-    if (useProjectStore().project.id === "") {
+    if (pid === "" && pid === null) {
       router.push("/home");
     } else {
       getAllCategories();
     }
 
+    //获取项目信息
+    const getProject = async () => {
+      pid = useRoute().params.projectId;
+      let resp = await service.get("/projects/" + pid);
+      projectName.value = resp.data.data.name;
+    };
+    getProject();
+
+    //新建案例
+    const exampleFormRef = ref();
+    const exampleRules = {
+      name: [
+        {
+          required: true,
+          message: "案例名称不能为空！",
+        },
+      ],
+    };
+    const exampleForm = ref({
+      name: "",
+      description: "",
+      categoryId: "",
+      userId: useUserStore().user.id,
+    });
+    const createExampleVisible = ref(false);
+    const showCreateExample = (id) => {
+      exampleForm.value.categoryId = id;
+      createExampleVisible.value = true;
+    };
+    const hideCreateExample = () => {
+      exampleFormRef.value
+        .validateFields()
+        .then(async () => {
+          createExampleVisible.value = false;
+          await service.post("/examples/create", exampleForm.value);
+          message.success("案例创建成功！");
+          searchCategories();
+
+          exampleFormRef.value.resetFields();
+        })
+        .catch(() => {
+          console.log("表单提交出错");
+        });
+    };
+
+    //编辑类别
+    const isEditCategory = ref(false);
+    let editCategoryId;
+    const showEditCategory = (category) => {
+      isEditCategory.value = true;
+      editCategoryId = category.id;
+      categoryForm.name = category.name;
+      createCategoryVisible.value = true;
+    };
+    const hideEditCategory = () => {
+      categoryFormRef.value
+        .validateFields()
+        .then(async () => {
+          await service.put("/categories", {
+            id: editCategoryId,
+            name: categoryForm.name,
+            projectId: categoryForm.projectId,
+            userId: categoryForm.userId,
+          });
+          searchCategories();
+          categoryFormRef.value.resetFields();
+          createCategoryVisible.value = false;
+        })
+        .catch(() => {
+          console.log("表单提交出错");
+        });
+    };
+
+    //监听router
+    watch(
+      () => router.currentRoute.value,
+      (newValue, oldValue) => {
+        if (newValue.name === "project") {
+          getProject();
+          getAllCategories();
+        }
+      }
+    );
+
     return {
-      showConfirm,
       categories,
       projectName,
-      // 删除类别确认
-      deleteCategoryVisible,
-      showDeleteCategory,
-      deleteCategoryOk,
-      deleteCategoryValue,
+      // 删除类别
+      deleteCategory,
 
       //新建类别
       createCategoryVisible,
@@ -311,9 +427,22 @@ export default defineComponent({
       categoryFormRef,
       categoryRules,
 
+      //新建案例
+      createExampleVisible,
+      showCreateExample,
+      hideCreateExample,
+      exampleForm,
+      exampleFormRef,
+      exampleRules,
+
       //搜索
       searchValue,
       searchCategories,
+
+      //编辑类别
+      isEditCategory,
+      showEditCategory,
+      hideEditCategory,
 
       toExample,
 

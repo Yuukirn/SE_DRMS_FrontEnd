@@ -241,7 +241,6 @@ import router from "@/router";
 import { useRoute } from "vue-router";
 import { defineComponent, ref, watch } from "vue";
 import service from "@/api/request";
-import { useProjectStore } from "@/store/project";
 import { useUserStore } from "@/store/user";
 // 图标
 import {
@@ -380,8 +379,6 @@ export default defineComponent({
     const onCloseAddModal = () => {
       addModalVisible.value = false;
     };
-
-    useProjectStore().setProject(null);
 
     //搜索
     const value = ref("");
