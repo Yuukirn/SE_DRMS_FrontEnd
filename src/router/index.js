@@ -2,9 +2,9 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 
 const routes = [
     {
-      path: '/projects',
-      name: 'projects',
-      component: () => import('../views/projects.vue')
+      path: '/home',
+      name: 'home',
+      component: () => import('../views/home.vue')
     },
     {
       path: '/login',
@@ -17,8 +17,19 @@ const routes = [
       component: () => import('../views/register.vue')
     },
     {
+      path: '/project',
+      name: 'project',
+      children:[
+				{
+					path:"example/:exampleId",
+          name:"example",
+					component:() => import('../views/example.vue')
+				}],
+      component: () => import('../views/project.vue')
+    },
+    {
       path: '/:pathMatcher(.*)*',
-      redirect: '/projects',
+      redirect: '/home',
     },
 ]
 

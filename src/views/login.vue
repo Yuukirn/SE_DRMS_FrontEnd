@@ -91,7 +91,7 @@ export default defineComponent({
         }
         message.success("登陆成功！");
 
-        router.push({ path: "/projects" });
+        router.push({ path: "/home" });
       }
     };
     const onFinishFailed = (errorInfo) => {

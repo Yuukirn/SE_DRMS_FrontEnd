@@ -18,21 +18,20 @@
           :style="{ overflow: 'initial' }"
         >
           <a-divider />
-          <div class="logo" />
           <a-input-search
             v-model:value="value"
-            placeholder="输入项目id号"
+            placeholder="输入项目名"
             enter-button="查询"
             size="large"
             style="margin: 0% 0% 5%"
             @search="onSearch"
           />
           <a-menu v-model:selectedKeys="selectedKeys" mode="inline">
-            <template v-if="show" v-for="project of projects">
+            <template v-for="project of projects">
               <a-menu-item
-                v-if="show"
-                :key="project.key"
-                @click="viewProject(project.key)"
+                v-if="project.id"
+                :key="project.id"
+                @click="viewProject(project)"
               >
                 <span class="nav-text">{{ project.name }}</span>
               </a-menu-item>
@@ -48,32 +47,37 @@
       </a-layout>
     </a-layout-sider>
     <a-layout style="margin: 0% 5% 0%" :style="{ marginLeft: '35%' }">
-      <a-layout-content :style="{ margin: '24px 16px 0', overflow: 'initial' }">
-        <template v-if="project !== null">
-          <a-layout>
-            <a-layout-header class="content_header">{{
-              project.name
-            }}</a-layout-header>
-            <a-layout-content
-              :style="{ margin: '24px 16px 0', overflow: 'initial' }"
-            >
-              <a-divider />
-              <div
-                :style="{
-                  padding: '24px',
-                  background: 'rgb(241, 241, 241)',
-                  textAlign: 'center',
-                }"
-              >
-                {{ project.description }}
-              </div>
-            </a-layout-content>
-          </a-layout>
-        </template>
-        <template v-else>
-          <a-empty style="margin: 30%" :description="null" />
-        </template>
-      </a-layout-content>
+      <template v-if="project !== null">
+        <a-layout-header class="content_header">{{
+          project.name
+        }}</a-layout-header>
+        <a-layout-content
+          :style="{ margin: '24px 16px 0', overflow: 'initial' }"
+        >
+          <a-divider />
+          <div
+            :style="{
+              padding: '24px',
+              background: 'rgb(241, 241, 241)',
+              textAlign: 'center',
+            }"
+          >
+            {{ project.description }}
+          </div>
+        </a-layout-content>
+        <a-layout-footer>
+          <a-button
+            type="primary"
+            size="large"
+            @click="() => router.push('/project')"
+          >
+            进入项目
+          </a-button>
+        </a-layout-footer>
+      </template>
+      <template v-else>
+        <a-empty style="margin: 30%" :description="null" />
+      </template>
     </a-layout>
   </a-layout>
 
@@ -91,10 +95,6 @@
       v-bind="layout"
       @finish="createProject"
     >
-      <a-form-item label="项目id" name="id">
-        <a-input-number v-model:value="projectForm.id" :min="1" />
-      </a-form-item>
-
       <a-form-item label="项目名称" name="name">
         <a-input
           v-model:value="projectForm.name"
@@ -133,7 +133,6 @@ export default defineComponent({
   components: {},
   setup() {
     const projectForm = reactive({
-      id: "",
       name: "",
       type: "",
       description: "",
@@ -174,41 +173,24 @@ export default defineComponent({
     };
     let projects = ref(null);
     useProjectStore().setProject(null);
-    let show = ref(false);
     let project = ref(null);
-    const getProjects = async (id) => {
-      show.value = false;
-      projects.value = [];
-      if (id === null || id === "") {
-        var resp = await service.get("/projects");
-        var arr = resp.data.data;
-        if (arr !== null) {
-          for (var i = 0; i < arr.length; i++) {
-            projects.value[i] = {
-              key: i + 1,
-              id: arr[i].id,
-              name: arr[i].name,
-              description: arr[i].description,
-            };
-          }
-          show.value = true;
-        }
+    const getProjects = async (name) => {
+      var resp;
+      if (name === null || name === "") {
+        resp = await service.get("/projects");
       } else {
-        var resp = await service.get("/projects/" + id);
-        var data = resp.data.data;
-        if (data !== null) {
-          projects.value[0] = {
-            key: 1,
-            id: data.id,
-            name: data.name,
-            description: data.description,
-          };
-          show.value = true;
-        }
+        resp = await service.get("/projects/" + name);
+      }
+      var arr;
+      if (resp === null) {
+        arr = [];
+        projects.value = arr;
+      } else {
+        arr = resp.data.data;
+        projects.value = arr;
       }
     };
     getProjects(null);
-
     const createProject = async () => {
       const resp = await service.post("/projects/create", projectForm);
       message.success("项目创建成功！");
@@ -216,13 +198,9 @@ export default defineComponent({
       visible.value = false;
     };
 
-    const viewProject = (key) => {
-      project.value = projects.value[key - 1];
-      useProjectStore().setProject({
-        id: project.id,
-        name: project.name,
-        description: project.description,
-      });
+    const viewProject = (value) => {
+      project.value = value;
+      useProjectStore().setProject(value);
     };
     //搜索
     const value = ref("");
@@ -244,7 +222,6 @@ export default defineComponent({
       getProjects,
       viewProject,
       createProject,
-      show,
       value,
       onSearch,
       projectForm,
@@ -253,6 +230,7 @@ export default defineComponent({
       showDrawer,
       onClose,
       layout,
+      router,
     };
   },
 });

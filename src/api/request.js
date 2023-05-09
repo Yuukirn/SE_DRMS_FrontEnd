@@ -14,6 +14,7 @@ const service = axios.create({
         //jwt
         Authorization: useUserStore().user.token
       }
+
       return config
     },
     (error)=>{
