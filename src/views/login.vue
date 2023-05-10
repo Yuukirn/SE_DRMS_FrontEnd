@@ -1,11 +1,16 @@
 <template>
   <a-layout style="min-height: 100vh">
-    <a-layout-header style="background-color: white"> </a-layout-header>
+    <a-layout-header style="background-color: white; height: 10%">
+      <a-page-header title="用户登录"> </a-page-header>
+    </a-layout-header>
     <a-layout-content>
       <a-form
         :model="formState"
         name="normal_login"
         class="login-form"
+        :style="{
+          background: 'rgb(245,245,245)',
+        }"
         @finish="onFinish"
         @finishFailed="onFinishFailed"
       >

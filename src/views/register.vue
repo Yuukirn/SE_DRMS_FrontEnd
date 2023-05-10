@@ -1,9 +1,13 @@
 <template>
   <a-layout style="min-height: 100vh">
-    <a-layout-header style="background-color: white">
+    <a-layout-header style="background-color: white; height: 10%">
       <a-page-header style="height: 100%" title="返回" @back="back" />
     </a-layout-header>
-    <a-layout-content>
+    <a-layout-content
+      :style="{
+        background: 'rgb(245,245,245)',
+      }"
+    >
       <template v-if="!success">
         <a-form
           ref="formRef"

@@ -210,7 +210,9 @@
         </a-layout-content>
       </a-layout>
     </a-layout-sider>
-    <a-layout-content :style="{ marginLeft: '432px' }">
+    <a-layout-content
+      :style="{ marginLeft: '432px', background: 'rgb(245, 245, 245)' }"
+    >
       <router-view> </router-view>
     </a-layout-content>
   </a-layout>
@@ -218,7 +220,7 @@
 <script scoped>
 import router from "@/router";
 import { useRoute } from "vue-router";
-import { defineComponent, ref, reactive, watch } from "vue";
+import { defineComponent, ref } from "vue";
 import service from "@/api/request";
 import { useUserStore } from "@/store/user";
 // 图标

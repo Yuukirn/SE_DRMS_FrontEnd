@@ -87,7 +87,7 @@
                 />
 
                 <delete-outlined
-                  @click="deleteProject(project.id)"
+                  @click="deleteProjectConfirm(project.id)"
                   style="font-size: 18px"
                 />
               </template>
@@ -105,8 +105,8 @@ import {
   DeleteOutlined,
   EditOutlined,
 } from "@ant-design/icons-vue";
-import { message } from "ant-design-vue";
-import { defineComponent, ref, reactive } from "vue";
+import { Modal, message } from "ant-design-vue";
+import { defineComponent, ref } from "vue";
 import { useUserStore } from "@/store/user";
 import { Local } from "@/utils/local";
 import service from "@/api/request";
@@ -213,6 +213,20 @@ export default defineComponent({
       }
       getProjects();
     };
+    //删除项目确认
+    const deleteProjectConfirm = (id) => {
+      Modal.confirm({
+        title: "删除该项目?",
+        okText: "确认",
+        okType: "danger",
+        cancelText: "取消",
+        onOk() {
+          deleteProject(id);
+        },
+        onCancel() {},
+        class: "test",
+      });
+    };
 
     //编辑项目
     const isEditProject = ref(false);
@@ -260,7 +274,7 @@ export default defineComponent({
       projects,
 
       //删除项目
-      deleteProject,
+      deleteProjectConfirm,
 
       //跳转到项目
       toProject,

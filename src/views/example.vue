@@ -1,17 +1,16 @@
 <template>
-  <a-layout style="min-height: 100vh">
+  <a-layout>
     <!-- 案例内容 -->
     <a-layout-content
       :style="{
-        margin: '24px 16px 0',
-        background: '#fff',
+        background: 'rgb(245, 245, 245)',
         overflow: 'initial',
       }"
     >
       <div
         :style="{
           margin: '64px 72px',
-          background: '#fff',
+          background: 'rgb(245, 245, 245)',
         }"
       >
         <a-typography>
@@ -38,7 +37,7 @@
                     <a-menu-item
                       key="2"
                       style="font-size: 16px"
-                      @click="deleteExample"
+                      @click="deleteExampleConfirm"
                     >
                       <delete-outlined style="font-size: 16px" />
                       删除案例
@@ -103,12 +102,21 @@
             </div>
           </a-typography-title>
 
-          <a-menu mode="inline" style="font-size: 16px; overflow-x: hidden">
+          <a-menu
+            mode="inline"
+            style="font-size: 16px; overflow-x: hidden"
+            :style="{
+              background: 'rgb(245,245,245)',
+            }"
+          >
             <template v-for="document in example.documents">
               <a-menu-item
                 style="width: 70%"
                 v-if="document.id !== ''"
                 :key="document.id"
+                :style="{
+                  background: '#fff',
+                }"
               >
                 <template #icon>
                   <template v-if="document.type === 1">
@@ -120,7 +128,9 @@
                 </template>
                 {{ document.name }}
                 <div style="float: right">
-                  <delete-outlined @click="deleteDocument(document.id)" />
+                  <delete-outlined
+                    @click="deleteDocumentConfirm(document.id)"
+                  />
                 </div>
               </a-menu-item>
             </template>
@@ -323,6 +333,20 @@ export default defineComponent({
         router.back();
       }
     };
+    //删除案例确认
+    const deleteExampleConfirm = () => {
+      Modal.confirm({
+        title: "删除本案例?",
+        okText: "确认",
+        okType: "danger",
+        cancelText: "取消",
+        onOk() {
+          deleteExample();
+        },
+        onCancel() {},
+        class: "test",
+      });
+    };
 
     //删除文件
     const deleteDocument = async (did) => {
@@ -330,6 +354,20 @@ export default defineComponent({
       if (resp !== null && resp.data.code === 200) {
         getExample();
       }
+    };
+    //删除文件确认
+    const deleteDocumentConfirm = (did) => {
+      Modal.confirm({
+        title: "删除该文件?",
+        okText: "确认",
+        okType: "danger",
+        cancelText: "取消",
+        onOk() {
+          deleteDocument(did);
+        },
+        onCancel() {},
+        class: "test",
+      });
     };
 
     const getExample = async () => {
@@ -377,10 +415,10 @@ export default defineComponent({
       exampleRules,
 
       //删除案例
-      deleteExample,
+      deleteExampleConfirm,
 
       //删除文件
-      deleteDocument,
+      deleteDocumentConfirm,
 
       getExample,
       router,
