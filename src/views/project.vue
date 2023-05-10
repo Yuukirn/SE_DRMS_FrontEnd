@@ -231,6 +231,7 @@ import {
   EditOutlined,
 } from "@ant-design/icons-vue";
 import { message } from "ant-design-vue";
+export let refreshProject;
 
 export default defineComponent({
   components: {
@@ -279,6 +280,7 @@ export default defineComponent({
       name: "",
       projectId: pid,
       userId: useUserStore().user.id,
+      simhash: 0,
     });
     const categoryRules = {
       name: [
@@ -402,16 +404,9 @@ export default defineComponent({
         });
     };
 
-    //监听router
-    watch(
-      () => router.currentRoute.value,
-      (newValue, oldValue) => {
-        if (newValue.name === "project") {
-          getProject();
-          getAllCategories();
-        }
-      }
-    );
+    refreshProject = () => {
+      searchCategories();
+    };
 
     return {
       categories,

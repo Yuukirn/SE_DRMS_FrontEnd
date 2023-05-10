@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <a-layout has-sider style="min-height: 100vh">
     <a-layout-sider
       width="30%"
@@ -268,5 +268,133 @@ export default defineComponent({
   text-align: left;
   font-size: 32px;
   margin: 5% 0% 0%;
+}
+</style>
+
+ -->
+
+
+ <template>
+  <div class="box">
+    <div class="content">
+      <!-- 标题 -->
+      <div class="head">
+        <a-text style="font-weight: bold;font-size: 32px;padding: 8px;">欢迎,</a-text>
+        <a-dropdown :placement="bottom" :overlayStyle="{ minWidth: 900 }">
+          <!-- 用户名 -->
+          <a-text style="color: #1684FC;font-weight: bold;font-size: 32px;padding: 8px;">
+            <template v-for="item in user"> {{ item.id }} </template>
+          </a-text>
+          <!-- 登出框 -->
+          <template #overlay>
+            <a-menu :style="{width: '120px'}">
+              <a-menu-item key="1" style="font-size: 16px;">
+                <logout-outlined style="font-size: 16px;margin-right: 4px;" />
+                登出
+              </a-menu-item>
+            </a-menu>
+          </template>
+        </a-dropdown>
+        <a-text style="font-weight: bold;font-size: 32px;">!</a-text>
+      </div>
+      <div class="project">
+        <a-text style="font-size: 20px;background-color: #fff;padding: 8px;">
+          我的项目库
+        </a-text>
+        <!-- 新建项目 -->
+        <div class="addButton">
+          <a-button type="primary" @click="showAddProject">
+            <template #icon>
+              <PlusOutlined />
+            </template>
+            新建项目
+          </a-button>
+          <a-modal v-model:visible="addProjectVisible" title="新建项目" ok-text="提交" cancel-text="取消" @ok="handleOk">
+            <p>Some contents...</p>
+            <p>Some contents...</p>
+            <p>Some contents...</p>
+          </a-modal>
+        </div>
+      </div>
+      <div class="card">
+        <a-row :gutter="[16, 16]" justify="space-around">
+          <a-col v-for="n in 6">
+            <a-card hoverable style="width: 300px">
+              <template #cover>
+                <img alt="example" src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png" />
+              </template>
+              <a-card-meta>
+                <template #title>Card title</template>
+                <template #description>This is the description</template>
+              </a-card-meta>
+            </a-card>
+          </a-col>
+        </a-row>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import { PlusOutlined, LogoutOutlined } from '@ant-design/icons-vue';
+import { defineComponent, ref } from 'vue';
+export default defineComponent({
+  components: {
+    PlusOutlined,
+    LogoutOutlined
+  },
+  setup() {
+    const addProjectVisible = ref(false);
+    const showAddProject = () => {
+      addProjectVisible.value = true;
+    };
+    const handleOk = e => {
+      console.log(e);
+      addProjectVisible.value = false;
+    };
+    const user = ref([{
+      id: '干饭不排队',
+      token: '',
+    },
+    ]);
+    return {
+      addProjectVisible,
+      showAddProject,
+      handleOk,
+      user,
+    };
+  }
+});
+</script>
+<style>
+.box {
+  display: flex;
+  justify-content: center;
+}
+
+.box .content {
+  width: 960px;
+  margin-top: 84px;
+
+}
+
+.box .content .head {
+  text-align: left;
+}
+
+.box .content .project {
+  margin-top: 32px;
+  text-align: left;
+  justify-content: center;
+  width: inherit;
+}
+
+.card {
+  margin-top: 14px;
+  text-align: left;
+}
+
+.addButton {
+  float: right;
+  margin-right: 8px;
 }
 </style>
