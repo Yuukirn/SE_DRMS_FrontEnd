@@ -193,7 +193,7 @@ export default defineComponent({
       projectFormRef.value
         .validateFields()
         .then(async () => {
-          await service.post("/projects/create", projectForm);
+          await service.post("/projects/create", projectForm.value);
           message.success("项目创建成功！");
           getProjects();
           addProjectVisible.value = false;

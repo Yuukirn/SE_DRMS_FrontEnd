@@ -266,7 +266,7 @@ export default defineComponent({
         .then(async () => {
           createCategoryVisible.value = false;
 
-          await service.post("/categories/create", categoryForm);
+          await service.post("/categories/create", categoryForm.value);
           message.success("类别创建成功！");
           searchCategories();
 
