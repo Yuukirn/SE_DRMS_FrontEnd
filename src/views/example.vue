@@ -37,6 +37,14 @@
                     <a-menu-item
                       key="2"
                       style="font-size: 16px"
+                      @click="showMoveExample"
+                    >
+                      <export-outlined style="font-size: 16px" />
+                      移动案例
+                    </a-menu-item>
+                    <a-menu-item
+                      key="3"
+                      style="font-size: 16px"
                       @click="deleteExampleConfirm"
                     >
                       <delete-outlined style="font-size: 16px" />
@@ -164,6 +172,23 @@
       </a-form-item>
     </a-form>
   </a-modal>
+  <!-- 移动案例 -->
+  <a-modal
+    v-model:visible="moveExampleVisible"
+    title="移动案例"
+    ok-text="移动"
+    cancel-text="取消"
+    @ok="moveExample"
+  >
+    <a-select
+      ref="selectCategory"
+      :options="categories"
+      :field-names="{ label: 'name', value: 'id', options: 'children' }"
+      v-model:value="selectCategoryValue"
+      style="width: 120px"
+    >
+    </a-select>
+  </a-modal>
 </template>
 <script scoped>
 import router from "@/router";
@@ -181,6 +206,7 @@ import {
   ImportOutlined,
   FilePdfOutlined,
   FileWordOutlined,
+  ExportOutlined,
   ExclamationCircleOutlined,
 } from "@ant-design/icons-vue";
 import { useUserStore } from "@/store/user";
@@ -200,11 +226,14 @@ export default defineComponent({
     ImportOutlined,
     FilePdfOutlined,
     FileWordOutlined,
+
+    ExportOutlined,
     ExclamationCircleOutlined,
   },
   setup() {
     //获取案例信息
     let exampleId = useRoute().params.exampleId;
+    let projectId = useRoute().params.projectId;
     const example = ref({ name: "", description: "" });
 
     const uploadFileList = ref([]);
@@ -312,13 +341,17 @@ export default defineComponent({
         .validateFields()
         .then(async () => {
           exampleForm.value.id = exampleId;
-          await service.put("/examples", exampleForm.value);
-          refreshProject();
+          let resp = await service.put("/examples", exampleForm.value);
+          if (resp === null || resp.data.code != 200) {
+            message.error("编辑案例失败！");
+          } else {
+            refreshProject();
 
-          example.value.name = exampleForm.value.name;
-          example.value.description = exampleForm.value.description;
-          editExampleVisible.value = false;
-          exampleFormRef.value.resetFields();
+            example.value.name = exampleForm.value.name;
+            example.value.description = exampleForm.value.description;
+            editExampleVisible.value = false;
+            exampleFormRef.value.resetFields();
+          }
         })
         .catch(() => {
           console.log("表单提交出错");
@@ -345,6 +378,42 @@ export default defineComponent({
         },
         onCancel() {},
         class: "test",
+      });
+    };
+
+    //移动案例
+    const categories = ref([]);
+    const getAllCategories = async () => {
+      var resp = await service.get("/categories/" + projectId);
+      if (resp === null) {
+        categories.value = [];
+      } else {
+        categories.value = resp.data.data;
+        selectCategoryValue.value = example.value.categoryId;
+      }
+    };
+    const moveExampleVisible = ref(false);
+    const selectCategoryValue = ref(null);
+    const showMoveExample = () => {
+      getAllCategories();
+      moveExampleVisible.value = true;
+    };
+    const moveExample = () => {
+      let oldCID = example.value.categoryId;
+      example.value.categoryId = selectCategoryValue.value;
+      if (selectCategoryValue.value === null) {
+        moveExampleVisible.value = false;
+        return;
+      }
+
+      service.put("/examples", example.value).then((resp) => {
+        if (resp === null) {
+          example.value.categoryId = oldCID;
+          messgage.error("移动案例失败！");
+        } else {
+          refreshProject();
+          moveExampleVisible.value = false;
+        }
       });
     };
 
@@ -413,6 +482,13 @@ export default defineComponent({
       exampleForm,
       exampleFormRef,
       exampleRules,
+
+      //移动案例
+      showMoveExample,
+      moveExample,
+      moveExampleVisible,
+      categories,
+      selectCategoryValue,
 
       //删除案例
       deleteExampleConfirm,
