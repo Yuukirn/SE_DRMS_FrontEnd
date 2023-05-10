@@ -257,6 +257,7 @@ export default defineComponent({
     const createCategoryVisible = ref(false);
     const showCreateCategory = () => {
       isEditCategory.value = false;
+      resetCategoryForm();
       createCategoryVisible.value = true;
     };
     const hideCreateCategory = () => {
@@ -269,18 +270,17 @@ export default defineComponent({
           message.success("类别创建成功！");
           searchCategories();
 
-          categoryFormRef.value.resetFields();
+          resetCategoryForm();
         })
         .catch(() => {
           console.log("表单提交出错");
         });
     };
     const categoryFormRef = ref();
-    const categoryForm = reactive({
+    const categoryForm = ref({
       name: "",
       projectId: pid,
       userId: useUserStore().user.id,
-      simhash: 0,
     });
     const categoryRules = {
       name: [
@@ -376,13 +376,21 @@ export default defineComponent({
         });
     };
 
+    const resetCategoryForm = () => {
+      categoryForm.value = {
+        name: "",
+        projectId: pid,
+        userId: useUserStore().user.id,
+      };
+    };
+
     //编辑类别
     const isEditCategory = ref(false);
     let editCategoryId;
     const showEditCategory = (category) => {
       isEditCategory.value = true;
       editCategoryId = category.id;
-      categoryForm.name = category.name;
+      categoryForm.value.name = category.name;
       createCategoryVisible.value = true;
     };
     const hideEditCategory = () => {
@@ -396,7 +404,7 @@ export default defineComponent({
             userId: categoryForm.userId,
           });
           searchCategories();
-          categoryFormRef.value.resetFields();
+          resetCategoryForm();
           createCategoryVisible.value = false;
         })
         .catch(() => {
