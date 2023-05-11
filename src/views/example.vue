@@ -134,7 +134,10 @@
                     <file-pdf-outlined />
                   </template>
                 </template>
-                {{ document.name }}
+                <a-typography-text @click="toDocument(document.id)">{{
+                  document.name
+                }}</a-typography-text>
+
                 <div style="float: right">
                   <delete-outlined
                     @click="deleteDocumentConfirm(document.id)"
@@ -448,6 +451,13 @@ export default defineComponent({
     };
     if (exampleId !== "" && exampleId !== null) getExample();
 
+    const toDocument = (id) => {
+      router.push({
+        name: "document",
+        params: { documentId: id },
+      });
+    };
+
     //监听router参数变化
     watch(
       () => router.currentRoute.value,
@@ -497,6 +507,7 @@ export default defineComponent({
       deleteDocumentConfirm,
 
       getExample,
+      toDocument,
       router,
     };
   },

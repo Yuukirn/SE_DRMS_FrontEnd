@@ -3,12 +3,13 @@
     <div class="content">
       <!-- 标题 -->
       <div class="head">
-        <a-text style="font-weight: bold; font-size: 32px; padding: 8px"
-          >欢迎,</a-text
+        <a-typography-text
+          style="font-weight: bold; font-size: 32px; padding: 8px"
+          >欢迎,</a-typography-text
         >
         <a-dropdown :overlayStyle="{ minWidth: 900 }">
           <!-- 用户名 -->
-          <a-text
+          <a-typography-text
             style="
               color: #1684fc;
               font-weight: bold;
@@ -17,7 +18,7 @@
             "
           >
             {{ user.name }}
-          </a-text>
+          </a-typography-text>
           <!-- 登出框 -->
           <template #overlay>
             <a-menu :style="{ width: '120px' }">
@@ -28,12 +29,16 @@
             </a-menu>
           </template>
         </a-dropdown>
-        <a-text style="font-weight: bold; font-size: 32px">!</a-text>
+        <a-typography-text style="font-weight: bold; font-size: 32px"
+          >!</a-typography-text
+        >
       </div>
       <div class="project">
-        <a-text style="font-size: 20px; background-color: #fff; padding: 8px">
+        <a-typography-text
+          style="font-size: 20px; background-color: #fff; padding: 8px"
+        >
           我的项目库
-        </a-text>
+        </a-typography-text>
         <!-- 新建项目 -->
         <div class="addButton">
           <a-button type="primary" @click="showAddProject">

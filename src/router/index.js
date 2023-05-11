@@ -24,7 +24,12 @@ const routes = [
 					path:"example/:exampleId",
           name:"example",
 					component:() => import('../views/example.vue')
-				}],
+				},  
+        {
+          path:"document/:documentId",
+          name:"document",
+          component:() => import('../views/document.vue')
+        }],
       component: () => import('../views/project.vue')
     },
     {

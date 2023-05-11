@@ -61,7 +61,7 @@
                   :model="categoryForm"
                   :rules="categoryRules"
                 >
-                  <a-form-item label="案例名称" name="name">
+                  <a-form-item label="类别名称" name="name">
                     <a-input
                       v-model:value="categoryForm.name"
                       placeholder="请输入名称"
@@ -145,7 +145,7 @@
                           <a-menu-item
                             key="3"
                             style="font-size: 16px"
-                            @click="deleteCategory(category.id)"
+                            @click="deleteCategoryConfirm(category.id)"
                           >
                             <delete-outlined style="font-size: 16px" />
                             删除类别
@@ -186,7 +186,7 @@
                             <a-menu-item
                               key="3"
                               style="font-size: 16px"
-                              @click="deleteCategory(category.id)"
+                              @click="deleteCategoryConfirm(category.id)"
                             >
                               <delete-outlined style="font-size: 16px" />
                               删除类别
@@ -232,7 +232,7 @@ import {
   MoreOutlined,
   EditOutlined,
 } from "@ant-design/icons-vue";
-import { message } from "ant-design-vue";
+import { Modal, message } from "ant-design-vue";
 export let refreshProject;
 
 export default defineComponent({
@@ -250,9 +250,24 @@ export default defineComponent({
     let pid = useRoute().params.projectId;
     const projectName = ref("");
 
+    //删除类别
     const deleteCategory = async (id) => {
       await service.delete("/categories/" + id);
       searchCategories();
+    };
+    //删除类别确认
+    const deleteCategoryConfirm = (id) => {
+      Modal.confirm({
+        title: "删除本类别?",
+        okText: "确认",
+        okType: "danger",
+        cancelText: "取消",
+        onOk() {
+          deleteCategory(id);
+        },
+        onCancel() {},
+        class: "test",
+      });
     };
 
     //新建类别
@@ -288,7 +303,7 @@ export default defineComponent({
       name: [
         {
           required: true,
-          message: "项目名称不能为空！",
+          message: "类别名称不能为空！",
         },
       ],
     };
@@ -422,7 +437,7 @@ export default defineComponent({
       categories,
       projectName,
       // 删除类别
-      deleteCategory,
+      deleteCategoryConfirm,
 
       //新建类别
       createCategoryVisible,
