@@ -138,11 +138,16 @@
                   document.name
                 }}</a-typography-text>
 
-                <div style="float: right">
-                  <delete-outlined
-                    @click="deleteDocumentConfirm(document.id)"
-                  />
-                </div>
+                <a-space size="middle" style="float: right">
+                  <a-tooltip placement="bottom" title="下载">
+                    <download-outlined @click="downloadDocument(document)" />
+                  </a-tooltip>
+                  <a-tooltip placement="bottom" title="删除">
+                    <delete-outlined
+                      @click="deleteDocumentConfirm(document.id)"
+                    />
+                  </a-tooltip>
+                </a-space>
               </a-menu-item>
             </template>
           </a-menu>
@@ -210,6 +215,7 @@ import {
   FilePdfOutlined,
   FileWordOutlined,
   ExportOutlined,
+  DownloadOutlined,
   ExclamationCircleOutlined,
 } from "@ant-design/icons-vue";
 import { useUserStore } from "@/store/user";
@@ -229,7 +235,7 @@ export default defineComponent({
     ImportOutlined,
     FilePdfOutlined,
     FileWordOutlined,
-
+    DownloadOutlined,
     ExportOutlined,
     ExclamationCircleOutlined,
   },
@@ -388,6 +394,7 @@ export default defineComponent({
     const categories = ref([]);
     const getAllCategories = async () => {
       var resp = await service.get("/categories/" + projectId);
+      console.log(resp);
       if (resp === null) {
         categories.value = [];
       } else {
@@ -420,6 +427,20 @@ export default defineComponent({
       });
     };
 
+    //下载文件
+    const downloadDocument = (doc) => {
+      service
+        .get("/documents/download/" + doc.id, { responseType: "blob" })
+        .then((resp) => {
+          const url = window.URL.createObjectURL(new Blob([resp.data]));
+          const link = document.createElement("a");
+          link.href = url;
+          link.setAttribute("download", doc.name);
+          document.body.appendChild(link);
+          link.click();
+        });
+    };
+
     //删除文件
     const deleteDocument = async (did) => {
       let resp = await service.delete("/documents/" + did);
@@ -443,6 +464,7 @@ export default defineComponent({
     };
 
     const getExample = async () => {
+      service.get("/examples/" + exampleId);
       let resp = await service.get("/examples/" + exampleId);
       if (resp !== null) {
         example.value = resp.data.data;
@@ -505,6 +527,8 @@ export default defineComponent({
 
       //删除文件
       deleteDocumentConfirm,
+      //下载文件
+      downloadDocument,
 
       getExample,
       toDocument,

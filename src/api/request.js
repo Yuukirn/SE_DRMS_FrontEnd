@@ -25,6 +25,9 @@ const service = axios.create({
   // 响应拦截器
   service.interceptors.response.use(
     (response)=>{
+      if(response.data.code === undefined){
+        return response;
+      }
       if(response.data.code === 200) {
         return response
       }     
