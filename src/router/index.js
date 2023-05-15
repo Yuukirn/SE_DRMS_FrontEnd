@@ -20,11 +20,16 @@ const routes = [
       path: '/project/:projectId',
       name: 'project',
       children:[
-				{
-					path:"example/:exampleId",
-          name:"example",
-					component:() => import('../views/example.vue')
-				},  
+        {
+          path: 'subproject/:subprojectId',
+          name: 'subproject',
+          component: () => import('../views/subproject.vue')
+        }, 
+        {
+          path: 'plan/:planId',
+          name: 'plan',
+          component: () => import('../views/plan.vue')
+        }, 
         {
           path:"document/:documentId",
           name:"document",

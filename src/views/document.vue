@@ -7,7 +7,7 @@
         <vue-office-docx :src="src" />
       </template>
       <template v-else>
-        <vue-office-pdf :src="src" />
+        <div style="white-space: pre-wrap">{{ src }}</div>
       </template>
       <a-back-top />
     </a-layout-content>
@@ -25,7 +25,6 @@ import { defineComponent, ref } from "vue";
 export default defineComponent({
   components: {
     VueOfficeDocx,
-    VueOfficePdf,
     router,
   },
   setup() {
@@ -34,8 +33,20 @@ export default defineComponent({
     const getDocument = () => {
       service.get("/documents/" + useRoute().params.documentId).then((resp) => {
         document.value = resp.data.data;
-        src.value =
-          service.defaults.baseURL + "/documents/download/" + document.value.id;
+        if (document.value.type == 1) {
+          src.value =
+            service.defaults.baseURL +
+            "/documents/download/" +
+            document.value.id;
+        } else {
+          service
+            .get("/documents/download/" + document.value.id, {
+              responseType: "text",
+            })
+            .then((resp) => {
+              src.value = resp.data;
+            });
+        }
       });
     };
     getDocument();

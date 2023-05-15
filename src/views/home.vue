@@ -147,7 +147,7 @@ export default defineComponent({
     //获取项目信息
     const projects = ref([]);
     const getProjects = async () => {
-      var resp = await service.get("/projects");
+      var resp = await service.get("/projects/all/" + useUserStore().user.id);
       var arr;
       if (resp.data === undefined) {
         arr = [];
