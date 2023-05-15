@@ -13,35 +13,7 @@
           background: '#fff',
         }"
       >
-        <!-- 这里子项目即sonProject -->
         <a-typography>
-          <!-- 固定按钮 -->
-          <div
-            class="fixed-button"
-            style="position: fixed; left: 88%; bottom: 10%"
-          >
-            <a-button type="primary" size="large" @click="showCaseModal"
-              >生成方案</a-button
-            >
-            <a-modal
-              v-model:visible="caseModalVisible"
-              title="方案选型"
-              style="width: 760px"
-              @ok="handleCaseOk"
-              ok-text="确认选择"
-              cancel-text="取消"
-            >
-              <p>根据相似度计算，为您推荐以下相似方案：</p>
-              <a-row :gutter="[16, 16]">
-                <a-col :span="8" v-for="n in 6">
-                  <a-card hoverable>
-                    <template #title>Card title</template>
-                    <p>card content</p>
-                  </a-card>
-                </a-col>
-              </a-row>
-            </a-modal>
-          </div>
           <div style="display: flex; position: relative; height: 48px">
             <a-input
               v-if="nameInputVisible"
@@ -61,7 +33,7 @@
                 <delete-outlined
                   placement="bottom"
                   @click="deleteSubprojectConfirm"
-                  style="font-size: 16px"
+                  style="font-size: 20px"
                 />
               </a-tooltip>
             </div>
@@ -139,7 +111,7 @@
               <a-tooltip placement="bottom" title="上传">
                 <import-outlined
                   @click="showUpLoadModal"
-                  style="font-size: 18px"
+                  style="font-size: 20px"
                 />
               </a-tooltip>
               <a-modal
@@ -160,8 +132,10 @@
                     >{{ uploading ? "上传中" : "上传" }}</a-button
                   >
                 </template>
+                <!-- 上传样式：图片 -->
                 <a-upload
                   v-model:file-list="uploadFileList"
+                  list-type="picture"
                   accept=".txt, .doc, .docx"
                   @remove="handleRemove"
                   :beforeUpload="beforeUpload"
@@ -175,7 +149,8 @@
             </div>
           </a-typography-title>
 
-          <a-menu mode="inline" style="font-size: 16px; overflow-x: hidden">
+          <!-- 文件预览列表 -->
+          <a-menu mode="inline" style="font-size: 18px; overflow-x: hidden">
             <template v-for="document in subprojectForm.documents">
               <a-menu-item
                 style="width: 70%"
@@ -185,10 +160,10 @@
               >
                 <template #icon>
                   <template v-if="document.type === 1">
-                    <file-word-outlined />
+                    <file-word-outlined style="font-size: 20px" />
                   </template>
                   <template v-else>
-                    <file-text-outlined />
+                    <file-text-outlined style="font-size: 20px" />
                   </template>
                 </template>
                 {{ document.name }}
@@ -204,7 +179,7 @@
                       >
                         <a-menu-item
                           key="1"
-                          style="font-size: 16px"
+                          style="font-size: 20px"
                           @click="downloadDocument(document)"
                         >
                           <download-outlined />
@@ -212,7 +187,7 @@
                         </a-menu-item>
                         <a-menu-item
                           key="2"
-                          style="font-size: 16px"
+                          style="font-size: 20px"
                           @click="deleteDocumentConfirm(document.id)"
                         >
                           <delete-outlined />
@@ -226,6 +201,30 @@
             </template>
           </a-menu>
         </a-typography>
+        <!-- 生成方案按钮 -->
+        <div style="float: right">
+          <a-button type="primary" size="large" @click="showCaseModal"
+            >生成方案</a-button
+          >
+          <a-modal
+            v-model:visible="caseModalVisible"
+            title="方案选型"
+            style="width: 760px"
+            @ok="handleCaseOk"
+            ok-text="确认选择"
+            cancel-text="取消"
+          >
+            <p>根据相似度计算，为您推荐以下相似方案：</p>
+            <a-row :gutter="[16, 16]">
+              <a-col :span="8" v-for="n in 6">
+                <a-card hoverable>
+                  <template #title>Card title</template>
+                  <p>card content</p>
+                </a-card>
+              </a-col>
+            </a-row>
+          </a-modal>
+        </div>
       </div>
     </a-layout-content>
   </a-layout>
