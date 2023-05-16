@@ -162,6 +162,7 @@ export default defineComponent({
     const projectForm = ref({
       id: "",
       name: "",
+      type: 1,
       description: "",
       userId: useUserStore().user.id,
     });
@@ -184,6 +185,7 @@ export default defineComponent({
         id: "",
         name: "",
         description: "",
+        type: 0,
         userId: useUserStore().user.id,
       };
     };
@@ -240,13 +242,14 @@ export default defineComponent({
       projectForm.value.name = project.name;
       projectForm.value.description = project.description;
       projectForm.value.id = project.id;
+      projectForm.value.type = 1;
       addProjectVisible.value = true;
     };
     const hideEditProject = () => {
       projectFormRef.value
         .validateFields()
         .then(async () => {
-          await service.put("/projects", projectForm);
+          await service.put("/projects", projectForm.value);
           getProjects();
           isEditProject.value = false;
           addProjectVisible.value = false;

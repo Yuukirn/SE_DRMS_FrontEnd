@@ -3,8 +3,11 @@
     <a-page-header :title="document.name" @back="() => router.back()">
     </a-page-header>
     <a-layout-content>
-      <template v-if="document.type === 1">
+      <template v-if="document.type === 1 || document.type === 2">
         <vue-office-docx :src="src" />
+      </template>
+      <template v-if="document.type === 3">
+        <vue-office-pdf :src="src" />
       </template>
       <template v-else>
         <div style="white-space: pre-wrap">{{ src }}</div>
@@ -25,6 +28,7 @@ import { defineComponent, ref } from "vue";
 export default defineComponent({
   components: {
     VueOfficeDocx,
+    VueOfficePdf,
     router,
   },
   setup() {
@@ -33,12 +37,8 @@ export default defineComponent({
     const getDocument = () => {
       service.get("/documents/" + useRoute().params.documentId).then((resp) => {
         document.value = resp.data.data;
-        if (document.value.type == 1) {
-          src.value =
-            service.defaults.baseURL +
-            "/documents/download/" +
-            document.value.id;
-        } else {
+        let type = document.value.type;
+        if (type === 4) {
           service
             .get("/documents/download/" + document.value.id, {
               responseType: "text",
@@ -46,6 +46,11 @@ export default defineComponent({
             .then((resp) => {
               src.value = resp.data;
             });
+        } else {
+          src.value =
+            service.defaults.baseURL +
+            "/documents/download/" +
+            document.value.id;
         }
       });
     };

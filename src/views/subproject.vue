@@ -136,7 +136,7 @@
                 <a-upload
                   v-model:file-list="uploadFileList"
                   list-type="picture"
-                  accept=".txt, .doc, .docx"
+                  accept=".txt, .doc, .docx,.pdf"
                   @remove="handleRemove"
                   :beforeUpload="beforeUpload"
                 >
@@ -159,8 +159,11 @@
                 @click="toDocument(document.id)"
               >
                 <template #icon>
-                  <template v-if="document.type === 1">
+                  <template v-if="document.type === 1 || document.type === 2">
                     <file-word-outlined style="font-size: 20px" />
+                  </template>
+                  <template v-if="document.type === 3">
+                    <file-pdf-outlined style="font-size: 20px" />
                   </template>
                   <template v-else>
                     <file-text-outlined style="font-size: 20px" />
@@ -232,7 +235,14 @@
 <script scoped>
 import router from "@/router";
 import { useRoute } from "vue-router";
-import { defineComponent, ref, reactive, watch, nextTick } from "vue";
+import {
+  defineComponent,
+  ref,
+  reactive,
+  watch,
+  nextTick,
+  createVNode,
+} from "vue";
 import service from "@/api/request";
 import { useUserStore } from "@/store/user";
 // 图标
@@ -245,9 +255,11 @@ import {
   DownloadOutlined,
   MoreOutlined,
   FileWordOutlined,
+  FilePdfOutlined,
   UploadOutlined,
   ImportOutlined,
   FileTextOutlined,
+  ExclamationCircleOutlined,
 } from "@ant-design/icons-vue";
 import { Modal, message } from "ant-design-vue";
 import { refreshProject } from "./project.vue";
@@ -263,7 +275,9 @@ export default defineComponent({
     FileWordOutlined,
     UploadOutlined,
     ImportOutlined,
+    FilePdfOutlined,
     FileTextOutlined,
+    ExclamationCircleOutlined,
   },
   setup() {
     let pid = useRoute().params.projectId;
