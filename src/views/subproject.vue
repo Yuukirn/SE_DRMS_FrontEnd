@@ -326,11 +326,17 @@ export default defineComponent({
     const KeywordInputRef = ref();
     const keywordInputValue = ref({ name: "" });
     const keywordInputVisible = ref(false);
-    const handleKeywordClose = (name) => {
-      const keywords = subprojectForm.value.keywords.filter(
+    const handleKeywordClose = async (name) => {
+      let pre = subprojectForm.value.keywords;
+      subprojectForm.value.keywords = subprojectForm.value.keywords.filter(
         (keyword) => keyword.name !== name
       );
-      subprojectForm.value.keywords = keywords;
+
+      let ret = await updateSubproject();
+
+      if (!ret) {
+        subprojectForm.value.keywords = pre;
+      }
     };
     const handleKeywordInputConfirm = async () => {
       const inputValue = keywordInputValue.value.name;
