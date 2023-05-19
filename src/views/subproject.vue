@@ -338,7 +338,9 @@ export default defineComponent({
       if (inputValue) {
         if (keywords === undefined) {
           subprojectForm.value.keywords = [{ name: inputValue }];
-        } else if (keywords.indexOf(inputValue) === -1) {
+        } else if (
+          keywords.find((keyword) => keyword.name === inputValue) === undefined
+        ) {
           subprojectForm.value.keywords = [...keywords, { name: inputValue }];
         }
 
