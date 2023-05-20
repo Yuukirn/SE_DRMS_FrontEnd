@@ -205,29 +205,39 @@
           </a-menu>
         </a-typography>
         <!-- 生成方案按钮 -->
-        <div style="float: right">
-          <a-button type="primary" size="large" @click="showCaseModal"
-            >生成方案</a-button
-          >
-          <a-modal
-            v-model:visible="caseModalVisible"
-            title="方案选型"
-            style="width: 760px"
-            @ok="handleCaseOk"
-            ok-text="确认选择"
-            cancel-text="取消"
-          >
-            <p>根据相似度计算，为您推荐以下相似方案：</p>
-            <a-row :gutter="[16, 16]">
-              <a-col :span="8" v-for="n in 6">
-                <a-card hoverable>
-                  <template #title>Card title</template>
-                  <p>card content</p>
-                </a-card>
-              </a-col>
-            </a-row>
-          </a-modal>
-        </div>
+        <template v-if="subprojectForm.plan === null">
+          <div style="float: right">
+            <a-button type="primary" size="large" @click="createPlanModal"
+              >生成方案</a-button
+            >
+            <a-modal
+              v-model:visible="createPlanModalVisible"
+              title="方案选型"
+              style="width: 760px"
+              @ok="handleCreatePlanOk"
+              ok-text="确认选择"
+              cancel-text="取消"
+            >
+              <p>根据相似度计算，为您推荐以下相似方案：</p>
+              <a-checkbox-group
+                v-model:value="selectedPlanList"
+                style="width: 100%"
+              >
+                <a-row :gutter="[16, 16]">
+                  <a-col :span="8" v-for="plan in similarPlanList">
+                    <a-card hoverable>
+                      <template #extra
+                        ><a-checkbox :value="plan"></a-checkbox
+                      ></template>
+                      <template #title>{{ plan.name }}</template>
+                      <p>{{ plan.description }}</p>
+                    </a-card>
+                  </a-col>
+                </a-row>
+              </a-checkbox-group>
+            </a-modal>
+          </div>
+        </template>
       </div>
     </a-layout-content>
   </a-layout>
@@ -235,14 +245,7 @@
 <script scoped>
 import router from "@/router";
 import { useRoute } from "vue-router";
-import {
-  defineComponent,
-  ref,
-  reactive,
-  watch,
-  nextTick,
-  createVNode,
-} from "vue";
+import { defineComponent, ref, watch, nextTick, createVNode } from "vue";
 import service from "@/api/request";
 import { useUserStore } from "@/store/user";
 // 图标
@@ -307,6 +310,7 @@ export default defineComponent({
         } else {
           subprojectForm.value = resp.data.data;
           subprojectId = subprojectForm.value.id;
+          console.log(subprojectForm.value);
         }
       }
     };
@@ -448,19 +452,32 @@ export default defineComponent({
     };
 
     // 根据相似度生成方案
-    const caseModalVisible = ref(false);
-    const showCaseModal = () => {
-      caseModalVisible.value = true;
+    const createPlanModalVisible = ref(false);
+    const createPlanModal = async () => {
+      let resp = await service.get("/plans/similar/" + subprojectId);
+      if (resp) {
+        selectedPlanList.value = [];
+        similarPlanList.value = resp.data.data;
+        createPlanModalVisible.value = true;
+      }
     };
-    const handleCaseOk = (e) => {
-      console.log(e);
-      caseModalVisible.value = false;
+    const handleCreatePlanOk = async () => {
+      console.log(selectedPlanList.value);
+      let resp = await service.post(
+        `/plans/create/${subprojectId}&${subprojectForm.value.userId}`,
+        selectedPlanList.value
+      );
+      if (!resp) {
+        message.error("创建方案失败！");
+      } else {
+        refreshProject();
+        subprojectForm.value.plan = { name: " " };
+      }
+      selectedPlanList.value = [];
+      createPlanModalVisible.value = false;
     };
-    const caseList = reactive({
-      name: [],
-      description: "",
-      inputValue: "",
-    });
+    const similarPlanList = ref([]);
+    const selectedPlanList = ref([]);
 
     const uploadFileList = ref([]);
     // 上传文件框
@@ -612,10 +629,11 @@ export default defineComponent({
       downloadDocument,
       toDocument,
 
-      caseModalVisible,
-      showCaseModal,
-      handleCaseOk,
-      caseList,
+      createPlanModalVisible,
+      createPlanModal,
+      handleCreatePlanOk,
+      similarPlanList,
+      selectedPlanList,
     };
   },
 });

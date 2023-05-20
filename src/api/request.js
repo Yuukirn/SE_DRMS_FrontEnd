@@ -40,7 +40,7 @@ const service = axios.create({
           message.error("登录失效！");
         }
         router.push({path: '/login'})
-        return Promise.resolve({})
+        return null;
       }else{
         return null;
       }
