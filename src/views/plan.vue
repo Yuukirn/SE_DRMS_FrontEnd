@@ -18,13 +18,28 @@
           <a-typography-title
             >{{ plan.name }}
             <div style="float: right">
-              <a-tooltip title="删除案例">
-                <delete-outlined
-                  placement="bottom"
-                  @click="deletePlanConfirm"
-                  style="font-size: 16px"
-                />
-              </a-tooltip>
+              <a-dropdown>
+                <more-outlined />
+                <template #overlay>
+                  <a-menu>
+                    <a-menu-item key="0">
+                      <export-outlined
+                        placement="bottom"
+                        @click="exportPlan"
+                        style="font-size: 16px"
+                      />导出案例
+                    </a-menu-item>
+                    <a-menu-item key="1">
+                      <delete-outlined
+                        placement="bottom"
+                        @click="deletePlanConfirm"
+                        style="font-size: 16px"
+                      />
+                      删除案例
+                    </a-menu-item>
+                  </a-menu>
+                </template>
+              </a-dropdown>
             </div>
           </a-typography-title>
 
@@ -44,13 +59,19 @@ import { useRoute } from "vue-router";
 import { defineComponent, ref, watch } from "vue";
 import service from "@/api/request";
 // 图标
-import { DeleteOutlined } from "@ant-design/icons-vue";
+import {
+  DeleteOutlined,
+  ExportOutlined,
+  MoreOutlined,
+} from "@ant-design/icons-vue";
 import { Modal, message } from "ant-design-vue";
 import { refreshProject } from "./project.vue";
 
 export default defineComponent({
   components: {
     DeleteOutlined,
+    ExportOutlined,
+    MoreOutlined,
   },
   setup() {
     let planId = useRoute().params.planId;
@@ -86,6 +107,20 @@ export default defineComponent({
       }
     };
 
+    const exportPlan = async () => {
+      let resp = await service.get("/plans/export/" + planId, {
+        responseType: "blob",
+      });
+      if (resp != null) {
+        const url = window.URL.createObjectURL(new Blob([resp.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", plan.value.name);
+        document.body.appendChild(link);
+        link.click();
+      }
+    };
+
     const deletePlanConfirm = () => {
       Modal.confirm({
         title: "删除该方案?",
@@ -113,6 +148,7 @@ export default defineComponent({
     return {
       plan,
       deletePlanConfirm,
+      exportPlan,
     };
   },
 });
