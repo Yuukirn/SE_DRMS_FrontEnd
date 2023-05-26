@@ -182,7 +182,7 @@
                       >
                         <a-menu-item
                           key="1"
-                          style="font-size: 20px"
+                          style="font-size: 16px"
                           @click="downloadDocument(document)"
                         >
                           <download-outlined />
@@ -190,7 +190,7 @@
                         </a-menu-item>
                         <a-menu-item
                           key="2"
-                          style="font-size: 20px"
+                          style="font-size: 16px"
                           @click="deleteDocumentConfirm(document.id)"
                         >
                           <delete-outlined />
@@ -229,8 +229,23 @@
                       <template #extra
                         ><a-checkbox :value="plan"></a-checkbox
                       ></template>
-                      <template #title>{{ plan.name }}</template>
-                      <p>{{ plan.description }}</p>
+                      <template #title>
+                        <a-typography-paragraph @click="selectPlan(plan)">
+                          {{ plan.name }}
+                        </a-typography-paragraph>
+                      </template>
+                      <a-typography-paragraph @click="selectPlan(plan)">
+                        <template
+                          v-if="
+                            plan.description === null ||
+                            plan.description === undefined ||
+                            plan.description === ''
+                          "
+                        >
+                          该方案没有描述
+                        </template>
+                        <template v-else> {{ plan.description }}</template>
+                      </a-typography-paragraph>
                     </a-card>
                   </a-col>
                 </a-row>
@@ -310,7 +325,6 @@ export default defineComponent({
         } else {
           subprojectForm.value = resp.data.data;
           subprojectId = subprojectForm.value.id;
-          console.log(subprojectForm.value);
         }
       }
     };
@@ -462,7 +476,6 @@ export default defineComponent({
       }
     };
     const handleCreatePlanOk = async () => {
-      console.log(selectedPlanList.value);
       let resp = await service.post(
         `/plans/create/${subprojectId}&${subprojectForm.value.userId}`,
         selectedPlanList.value
@@ -475,6 +488,18 @@ export default defineComponent({
       }
       selectedPlanList.value = [];
       createPlanModalVisible.value = false;
+    };
+    const selectPlan = (plan) => {
+      if (
+        selectedPlanList.value.find((value) => value.id === plan.id) ===
+        undefined
+      ) {
+        selectedPlanList.value = [...selectedPlanList.value, plan];
+      } else {
+        selectedPlanList.value = selectedPlanList.value.filter(
+          (value) => value.id !== plan.id
+        );
+      }
     };
     const similarPlanList = ref([]);
     const selectedPlanList = ref([]);
@@ -629,6 +654,7 @@ export default defineComponent({
       downloadDocument,
       toDocument,
 
+      selectPlan,
       createPlanModalVisible,
       createPlanModal,
       handleCreatePlanOk,

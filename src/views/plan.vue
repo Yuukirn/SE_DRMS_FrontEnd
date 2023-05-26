@@ -15,26 +15,38 @@
       >
         <!-- 这里方案即plan -->
         <a-typography>
-          <a-typography-title
-            >{{ plan.name }}
-            <div style="float: right">
+          <a-typography-title>
+            <a-input
+              v-if="nameInputVisible"
+              ref="nameInputRef"
+              v-model:value="nameInputValue"
+              style="font-size: 32px; width: 80%"
+              @blur="handleNameInputConfirm"
+            >
+            </a-input>
+            <a-typography-text v-else @click="showNameInput">
+              {{ plan.name }}
+            </a-typography-text>
+
+            <div style="float: right; font-size: 25px">
               <a-dropdown>
                 <more-outlined />
                 <template #overlay>
                   <a-menu>
-                    <a-menu-item key="0">
-                      <export-outlined
-                        placement="bottom"
-                        @click="exportPlan"
-                        style="font-size: 16px"
-                      />导出案例
+                    <a-menu-item
+                      style="font-size: 18px"
+                      @click="exportPlan"
+                      key="0"
+                    >
+                      <export-outlined />
+                      导出案例
                     </a-menu-item>
-                    <a-menu-item key="1">
-                      <delete-outlined
-                        placement="bottom"
-                        @click="deletePlanConfirm"
-                        style="font-size: 16px"
-                      />
+                    <a-menu-item
+                      style="font-size: 18px"
+                      @click="deletePlanConfirm"
+                      key="1"
+                    >
+                      <delete-outlined />
                       删除案例
                     </a-menu-item>
                   </a-menu>
@@ -45,9 +57,34 @@
 
           <a-divider />
           <a-typography-title :level="2">方案描述</a-typography-title>
-          <a-typography-paragraph style="font-size: 16px">{{
-            plan.description
-          }}</a-typography-paragraph>
+          <a-textarea
+            v-if="desInputVisible"
+            ref="desInputRef"
+            v-model:value="desInputValue"
+            :rows="4"
+            style="font-size: 16px; width: 80%; margin-bottom: 36px"
+            @blur="handleDsConfirm"
+          />
+          <div v-else @click="showDescriptionInput">
+            <template
+              v-if="
+                plan.description === null ||
+                plan.description === undefined ||
+                plan.description === ''
+              "
+            >
+              <a-typography-paragraph style="font-size: 16px">
+                方案没有描述</a-typography-paragraph
+              ></template
+            >
+            <template v-else>
+              <a-typography-paragraph
+                style="font-s ize: 16px; white-space: pre-wrap"
+              >
+                {{ plan.description }}
+              </a-typography-paragraph>
+            </template>
+          </div>
         </a-typography>
       </div>
     </a-layout-content>
@@ -56,13 +93,14 @@
 <script scoped>
 import router from "@/router";
 import { useRoute } from "vue-router";
-import { defineComponent, ref, watch } from "vue";
+import { defineComponent, ref, watch, nextTick } from "vue";
 import service from "@/api/request";
 // 图标
 import {
   DeleteOutlined,
   ExportOutlined,
   MoreOutlined,
+  EditOutlined,
 } from "@ant-design/icons-vue";
 import { Modal, message } from "ant-design-vue";
 import { refreshProject } from "./project.vue";
@@ -72,6 +110,7 @@ export default defineComponent({
     DeleteOutlined,
     ExportOutlined,
     MoreOutlined,
+    EditOutlined,
   },
   setup() {
     let planId = useRoute().params.planId;
@@ -135,6 +174,73 @@ export default defineComponent({
       });
     };
 
+    const updatePlan = async () => {
+      let resp = await service.put("/plans", plan.value);
+      if (resp !== null && resp !== undefined) {
+        return true;
+      } else {
+        message.error("更改子项目失败！");
+        return false;
+      }
+    };
+
+    const nameInputRef = ref();
+    const desInputRef = ref();
+    const nameInputVisible = ref(false);
+    const nameInputValue = ref("");
+    const desInputVisible = ref(false);
+    const desInputValue = ref("");
+
+    const showNameInput = () => {
+      nameInputVisible.value = true;
+      nameInputValue.value = plan.value.name;
+      nextTick(() => {
+        nameInputRef.value.focus();
+      });
+    };
+
+    const showDescriptionInput = () => {
+      desInputVisible.value = true;
+      desInputValue.value = plan.value.description;
+      nextTick(() => {
+        desInputRef.value.focus();
+      });
+    };
+    const handleNameInputConfirm = async () => {
+      let value = nameInputValue.value;
+      let pre = plan.value.name;
+      if (value && value.replace(/^\s*/, "") !== "") {
+        plan.value.name = value;
+      }
+
+      let ret = await updatePlan();
+      if (!ret) {
+        plan.value.name = pre;
+      } else {
+        refreshProject();
+      }
+
+      nameInputValue.value = "";
+      nameInputVisible.value = false;
+    };
+
+    const handleDsConfirm = async () => {
+      let value = desInputValue.value;
+      let pre = plan.value.description;
+      if (value && value.replace(/^\s*/, "") !== "") {
+        plan.value.description = value;
+      }
+
+      let ret = await updatePlan();
+
+      if (!ret) {
+        plan.value.description = pre;
+      }
+
+      desInputVisible.value = false;
+      desInputValue.value = "";
+    };
+
     watch(
       () => router.currentRoute.value,
       (newValue, oldValue) => {
@@ -149,6 +255,18 @@ export default defineComponent({
       plan,
       deletePlanConfirm,
       exportPlan,
+
+      nameInputRef,
+      showNameInput,
+      handleNameInputConfirm,
+      nameInputVisible,
+      nameInputValue,
+      desInputVisible,
+      desInputValue,
+
+      desInputRef,
+      showDescriptionInput,
+      handleDsConfirm,
     };
   },
 });
