@@ -219,37 +219,27 @@
               cancel-text="取消"
             >
               <p>根据相似度计算，为您推荐以下相似方案：</p>
-              <a-checkbox-group
-                v-model:value="selectedPlanList"
-                style="width: 100%"
-              >
-                <a-row :gutter="[16, 16]">
-                  <a-col :span="8" v-for="plan in similarPlanList">
-                    <a-card hoverable>
-                      <template #extra
-                        ><a-checkbox :value="plan"></a-checkbox
-                      ></template>
-                      <template #title>
-                        <a-typography-paragraph @click="selectPlan(plan)">
-                          {{ plan.name }}
-                        </a-typography-paragraph>
-                      </template>
-                      <a-typography-paragraph @click="selectPlan(plan)">
-                        <template
-                          v-if="
-                            plan.description === null ||
-                            plan.description === undefined ||
-                            plan.description === ''
-                          "
-                        >
-                          该方案没有描述
-                        </template>
-                        <template v-else> {{ plan.description }}</template>
-                      </a-typography-paragraph>
-                    </a-card>
-                  </a-col>
-                </a-row>
-              </a-checkbox-group>
+
+              <a-row :gutter="[16, 16]">
+                <a-col :span="8" v-for="plan in similarPlanList">
+                  <a-card @click="selectPlan(plan)" hoverable>
+                    <template #extra
+                      ><a-checkbox
+                        :checked="
+                          selectedPlanList.find(
+                            (value) => value.id === plan.id
+                          ) !== undefined
+                        "
+                    /></template>
+                    <template #title>
+                      {{ plan.name }}
+                    </template>
+                    <a-typography-paragraph>
+                      {{ plan.description }}
+                    </a-typography-paragraph>
+                  </a-card>
+                </a-col>
+              </a-row>
             </a-modal>
           </div>
         </template>
@@ -279,7 +269,7 @@ import {
   FileTextOutlined,
   ExclamationCircleOutlined,
 } from "@ant-design/icons-vue";
-import { Modal, message } from "ant-design-vue";
+import { Modal, TypographyText, message } from "ant-design-vue";
 import { refreshProject } from "./project.vue";
 export default defineComponent({
   components: {
