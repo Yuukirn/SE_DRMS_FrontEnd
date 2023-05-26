@@ -425,7 +425,8 @@ export default defineComponent({
 
     const deletesubproject = async (id) => {
       await service.delete("/subprojects/" + id);
-      searchSubprojects();
+      router.back();
+      refreshProject();
     };
     const deleteSubprojectConfirm = () => {
       Modal.confirm({
@@ -434,7 +435,7 @@ export default defineComponent({
         okType: "danger",
         cancelText: "取消",
         onOk() {
-          deletesubproject(id);
+          deletesubproject(subprojectId);
         },
         onCancel() {},
         class: "test",
@@ -452,6 +453,8 @@ export default defineComponent({
         link.setAttribute("download", doc.name);
         document.body.appendChild(link);
         link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
       }
     };
 

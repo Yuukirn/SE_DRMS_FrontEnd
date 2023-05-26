@@ -157,6 +157,8 @@ export default defineComponent({
         link.setAttribute("download", plan.value.name);
         document.body.appendChild(link);
         link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
       }
     };
 
