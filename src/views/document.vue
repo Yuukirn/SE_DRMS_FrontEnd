@@ -1,5 +1,5 @@
 <template>
-  <a-layout>
+  <a-layout style="background-color: white; min-height: 100vh">
     <a-page-header :title="document.name" @back="() => router.back()">
     </a-page-header>
     <a-layout-content>
@@ -10,7 +10,7 @@
         <vue-office-pdf :src="src" />
       </template>
       <template v-else>
-        <div style="white-space: pre-wrap">{{ src }}</div>
+        <div style="white-space: pre-wrap; margin: 2%">{{ src }}</div>
       </template>
       <a-back-top />
     </a-layout-content>

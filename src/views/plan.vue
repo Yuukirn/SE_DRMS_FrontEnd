@@ -39,7 +39,7 @@
                       key="0"
                     >
                       <export-outlined />
-                      导出案例
+                      导出方案
                     </a-menu-item>
                     <a-menu-item
                       style="font-size: 18px"
@@ -47,7 +47,7 @@
                       key="1"
                     >
                       <delete-outlined />
-                      删除案例
+                      删除方案
                     </a-menu-item>
                   </a-menu>
                 </template>
