@@ -61,7 +61,7 @@
             v-if="desInputVisible"
             ref="desInputRef"
             v-model:value="desInputValue"
-            :rows="4"
+            :rows="15"
             style="font-size: 16px; width: 80%; margin-bottom: 36px"
             @blur="handleDsConfirm"
           />

@@ -80,7 +80,7 @@
             v-if="desInputVisible"
             ref="desInputRef"
             v-model:value="desInputValue"
-            :rows="4"
+            :rows="15"
             style="font-size: 16px; width: 80%; margin-bottom: 36px"
             @blur="handleDsConfirm"
           />
@@ -215,9 +215,20 @@
               title="方案选型"
               style="width: 760px"
               @ok="handleCreatePlanOk"
-              ok-text="确认选择"
               cancel-text="取消"
             >
+              <template #footer>
+                <a-button key="cancel" @click="createPlanModalVisible = false"
+                  >取消</a-button
+                >
+                <a-button
+                  key="submit"
+                  type="primary"
+                  :loading="createPlanLoading"
+                  @click="handleCreatePlanOk"
+                  >生成</a-button
+                >
+              </template>
               <p>根据相似度计算，为您推荐以下相似方案：</p>
 
               <a-row :gutter="[16, 16]">
@@ -468,7 +479,9 @@ export default defineComponent({
         createPlanModalVisible.value = true;
       }
     };
+    const createPlanLoading = ref(false);
     const handleCreatePlanOk = async () => {
+      createPlanLoading.value = true;
       let resp = await service.post(
         `/plans/create/${subprojectId}&${subprojectForm.value.userId}`,
         selectedPlanList.value
@@ -481,6 +494,7 @@ export default defineComponent({
       }
       selectedPlanList.value = [];
       createPlanModalVisible.value = false;
+      createPlanLoading.value = false;
     };
     const selectPlan = (plan) => {
       if (
@@ -650,6 +664,7 @@ export default defineComponent({
       selectPlan,
       createPlanModalVisible,
       createPlanModal,
+      createPlanLoading,
       handleCreatePlanOk,
       similarPlanList,
       selectedPlanList,
