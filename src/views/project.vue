@@ -232,11 +232,33 @@ export default defineComponent({
       userId: useUserStore().user.id,
       keywords: [],
     });
+    const nameValidator = async (_rule, value) => {
+      if (value.replace(/^\s*/, "") === "") {
+        return Promise.reject("子项目名称不可以为空格！");
+      } else {
+        return Promise.resolve();
+      }
+    };
+    const desValidator = async (_rule, value) => {
+      if (value.length === 0) return Promise.resolve();
+      if (value.replace(/^\s*/, "") === "") {
+        return Promise.reject("项目描述不可以为空格！");
+      } else {
+        return Promise.resolve();
+      }
+    };
     const subprojectRules = {
       name: [
         {
           required: true,
+          validator: nameValidator,
           message: "子项目名称不能为空！",
+        },
+      ],
+      description: [
+        {
+          validator: desValidator,
+          message: "项目描述不能为空！",
         },
       ],
     };
@@ -252,12 +274,14 @@ export default defineComponent({
     };
     const handleKeywordInputConfirm = () => {
       const inputValue = keywordInputValue.value.name;
-      let keywords = subprojectForm.value.keywords;
-      if (inputValue) {
-        if (keywords === undefined) {
-          subprojectForm.value.keywords = [{ name: inputValue }];
-        } else if (keywords.indexOf(inputValue) === -1) {
-          subprojectForm.value.keywords = [...keywords, { name: inputValue }];
+      if (inputValue && inputValue.replace(/^\s*/, "") !== "") {
+        let keywords = subprojectForm.value.keywords;
+        if (inputValue) {
+          if (keywords === undefined) {
+            subprojectForm.value.keywords = [{ name: inputValue }];
+          } else if (keywords.indexOf(inputValue) === -1) {
+            subprojectForm.value.keywords = [...keywords, { name: inputValue }];
+          }
         }
       }
 

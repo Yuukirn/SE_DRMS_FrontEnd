@@ -166,16 +166,32 @@ export default defineComponent({
       description: "",
       userId: useUserStore().user.id,
     });
+    const nameValidator = async (_rule, value) => {
+      if (value.replace(/^\s*/, "") === "") {
+        return Promise.reject("项目名称不可以为空格！");
+      } else {
+        return Promise.resolve();
+      }
+    };
+    const desValidator = async (_rule, value) => {
+      if (value.replace(/^\s*/, "") === "") {
+        return Promise.reject("项目描述不可以为空格！");
+      } else {
+        return Promise.resolve();
+      }
+    };
     const rules = {
       name: [
         {
           required: true,
+          validator: nameValidator,
           message: "项目名称不能为空！",
         },
       ],
       description: [
         {
           required: true,
+          validator: desValidator,
           message: "项目描述不能为空！",
         },
       ],

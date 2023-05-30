@@ -280,7 +280,7 @@ import {
   FileTextOutlined,
   ExclamationCircleOutlined,
 } from "@ant-design/icons-vue";
-import { Modal, TypographyText, message } from "ant-design-vue";
+import { Modal, TypographyText, message, Upload } from "ant-design-vue";
 import { refreshProject } from "./project.vue";
 export default defineComponent({
   components: {
@@ -359,8 +359,9 @@ export default defineComponent({
     };
     const handleKeywordInputConfirm = async () => {
       const inputValue = keywordInputValue.value.name;
-      let keywords = subprojectForm.value.keywords;
-      if (inputValue) {
+      if (inputValue && inputValue.replace(/^\s*/, "") !== "") {
+        let keywords = subprojectForm.value.keywords;
+
         if (keywords === undefined) {
           subprojectForm.value.keywords = [{ name: inputValue }];
         } else if (
@@ -375,6 +376,7 @@ export default defineComponent({
           subprojectForm.value.keywords = keywords;
         }
       }
+
       keywordInputVisible.value = false;
       keywordInputValue.value.name = "";
     };
@@ -529,8 +531,18 @@ export default defineComponent({
       newFileList.splice(index, 1);
       uploadFileList.value = newFileList;
     };
-
+    const whiteList = ["txt", "doc", "docx", "pdf"];
     const beforeUpload = (file) => {
+      var index = file.name.lastIndexOf(".");
+      var ext = file.name.substr(index + 1);
+      if (whiteList.indexOf(ext) == -1) {
+        message.error("文件类型错误！");
+        return Upload.LIST_IGNORE;
+      }
+      if (file.size / 1024 / 1024 > 20) {
+        message.error("文件大于20M！");
+        return Upload.LIST_IGNORE;
+      }
       uploadFileList.value = [...uploadFileList.value, file];
       return false;
     };

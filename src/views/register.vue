@@ -36,7 +36,7 @@
                 </a-input>
               </a-form-item>
               <a-form-item name="password" :rules="[{ required: true }]">
-                <a-input
+                <a-input-password
                   v-model:value="formState.password"
                   placeholder="密码"
                   class="inputt"
@@ -51,7 +51,7 @@
                       "
                     />
                   </template>
-                </a-input>
+                </a-input-password>
               </a-form-item>
               <a-form-item
                 name="email"
