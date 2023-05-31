@@ -4,7 +4,7 @@ import { message } from 'ant-design-vue'
 import router from '@/router'
 
 const service = axios.create({
-    baseURL: "http://10.16.83.92:8080"
+    baseURL: "http://localhost:8080"
   })
   
   // 请求拦截器

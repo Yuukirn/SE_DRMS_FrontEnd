@@ -205,7 +205,7 @@
           </a-menu>
         </a-typography>
         <!-- 生成方案按钮 -->
-        <template v-if="subprojectForm.plan === null">
+        <template v-if="createPlanButtonVisible">
           <div style="float: right">
             <a-button type="primary" size="large" @click="createPlanModal"
               >生成方案</a-button
@@ -470,7 +470,7 @@ export default defineComponent({
         window.URL.revokeObjectURL(url);
       }
     };
-
+    const createPlanButtonVisible = ref(true);
     // 根据相似度生成方案
     const createPlanModalVisible = ref(false);
     const createPlanModal = async () => {
@@ -488,9 +488,15 @@ export default defineComponent({
         `/plans/create/${subprojectId}&${subprojectForm.value.userId}`,
         selectedPlanList.value
       );
-      if (!resp) {
+      console.log(resp);
+      if (
+        !resp ||
+        resp.data === undefined ||
+        resp.data.msg === "this subproject has plan"
+      ) {
         message.error("创建方案失败！");
       } else {
+        createPlanButtonVisible.value = false;
         refreshProject();
         subprojectForm.value.plan = { name: " " };
       }
@@ -628,6 +634,7 @@ export default defineComponent({
         if (newValue.name === "subproject") {
           subprojectId = newValue.params.subprojectId;
           getSubproject();
+          createPlanButtonVisible.value = subprojectForm.value.plan !== null;
         }
       }
     );
@@ -676,6 +683,7 @@ export default defineComponent({
       selectPlan,
       createPlanModalVisible,
       createPlanModal,
+      createPlanButtonVisible,
       createPlanLoading,
       handleCreatePlanOk,
       similarPlanList,
