@@ -498,7 +498,6 @@ export default defineComponent({
       } else {
         createPlanButtonVisible.value = false;
         refreshProject();
-        subprojectForm.value.plan = { name: " " };
       }
       selectedPlanList.value = [];
       createPlanModalVisible.value = false;
