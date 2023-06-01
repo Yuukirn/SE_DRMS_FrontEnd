@@ -312,6 +312,7 @@ export default defineComponent({
       description: "",
       projectId: pid,
       userId: useUserStore().user.id,
+      plan: null,
       keywords: [],
       documents: [],
     });
@@ -324,6 +325,7 @@ export default defineComponent({
           router.back();
         } else {
           subprojectForm.value = resp.data.data;
+          createPlanButtonVisible.value = subprojectForm.value.plan === null;
           subprojectId = subprojectForm.value.id;
         }
       }
@@ -487,7 +489,6 @@ export default defineComponent({
         `/plans/create/${subprojectId}&${subprojectForm.value.userId}`,
         selectedPlanList.value
       );
-      console.log(resp);
       if (
         !resp ||
         resp.data === undefined ||
@@ -632,7 +633,6 @@ export default defineComponent({
         if (newValue.name === "subproject") {
           subprojectId = newValue.params.subprojectId;
           getSubproject();
-          createPlanButtonVisible.value = subprojectForm.value.plan !== null;
         }
       }
     );
