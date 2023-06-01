@@ -170,7 +170,6 @@
                   </template>
                 </template>
                 {{ document.name }}
-
                 <div style="float: right">
                   <a-dropdown :overlayStyle="{ minWidth: 900 }">
                     <more-outlined style="font-size: 20px" />
