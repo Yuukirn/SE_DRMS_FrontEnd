@@ -47,10 +47,19 @@
           <a-modal
             v-model:visible="addProjectVisible"
             :title="isEditProject ? '编辑项目' : '新建项目'"
-            :ok-text="isEditProject ? '编辑' : '新建'"
-            cancel-text="取消"
-            @ok="isEditProject ? hideEditProject() : handleOk()"
           >
+            <template #footer>
+              <a-button key="cancel" @click="addProjectVisible = false"
+                >取消</a-button
+              >
+              <a-button
+                key="submit"
+                type="primary"
+                :loading="createProjectLoading"
+                @click="isEditProject ? hideEditProject() : handleOk()"
+                >{{ isEditProject ? "编辑" : "创建" }}</a-button
+              >
+            </template>
             <a-form ref="projectFormRef" :model="projectForm" :rules="rules">
               <a-form-item label="项目名称" name="name">
                 <a-input
@@ -71,7 +80,7 @@
         </div>
       </div>
       <div class="card">
-        <a-row :gutter="[16, 16]" justify="space-around">
+        <a-row :gutter="[28, 16]">
           <a-col v-for="project in projects">
             <a-card hoverable style="width: 300px">
               <template #cover>
@@ -212,13 +221,16 @@ export default defineComponent({
       resetFields();
       addProjectVisible.value = true;
     };
+    const createProjectLoading = ref(false);
     const handleOk = () => {
       projectFormRef.value
         .validateFields()
         .then(async () => {
+          createProjectLoading.value = true;
           await service.post("/projects/create", projectForm.value);
           message.success("项目创建成功！");
           getProjects();
+          createProjectLoading.value = false;
           addProjectVisible.value = false;
           resetFields();
         })
@@ -265,8 +277,10 @@ export default defineComponent({
       projectFormRef.value
         .validateFields()
         .then(async () => {
+          createProjectLoading.value = true;
           await service.put("/projects", projectForm.value);
           getProjects();
+          createProjectLoading.value = false;
           isEditProject.value = false;
           addProjectVisible.value = false;
           resetFields();
@@ -288,6 +302,7 @@ export default defineComponent({
       showAddProject,
       handleOk,
       projectFormRef,
+      createProjectLoading,
 
       //编辑项目
       hideEditProject,

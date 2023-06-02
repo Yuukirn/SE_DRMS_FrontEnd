@@ -29,7 +29,7 @@
             <div style="width: 332px">
               <a-input
                 v-model:value="searchValue"
-                placeholder="查找方案/案例"
+                placeholder="查找子项目"
                 size="large"
                 @pressEnter="searchSubprojects"
               >
@@ -52,10 +52,21 @@
               <a-modal
                 v-model:visible="createSubprojectVisible"
                 title="新建子项目"
-                ok-text="创建"
-                cancel-text="取消"
-                @ok="hideCreateSubproject"
               >
+                <template #footer>
+                  <a-button
+                    key="cancel"
+                    @click="createSubprojectVisible = false"
+                    >取消</a-button
+                  >
+                  <a-button
+                    key="submit"
+                    type="primary"
+                    :loading="createSubprojectLoading"
+                    @click="hideCreateSubproject"
+                    >创建</a-button
+                  >
+                </template>
                 <a-form
                   ref="subprojectFormRef"
                   :model="subprojectForm"
@@ -68,22 +79,7 @@
                     />
                   </a-form-item>
 
-                  <a-form-item label="关键词" name="keyword">
-                    <div style="display: flex; align-items: center">
-                      <a-row :gutter="[16, 16]" justify="start">
-                        <a-col v-for="keyword in subprojectForm.keywords">
-                          <div style="font-size: 16px; margin-right: 24px">
-                            <tag-outlined style="font-size: 20px" />
-                            {{ keyword.name }}
-                            <close-outlined
-                              style="font-size: 16px; color: #999"
-                              @click="handleKeywordClose(keyword.name)"
-                            />
-                          </div>
-                        </a-col>
-                      </a-row>
-                    </div>
-                    <br />
+                  <a-form-item label="子项目关键词" name="keyword">
                     <a-input
                       v-if="keywordInputVisible"
                       ref="KeywordInputRef"
@@ -105,6 +101,27 @@
                       <plus-outlined />
                       添加关键词
                     </a-button>
+
+                    <div
+                      style="
+                        display: flex;
+                        align-items: center;
+                        margin-top: 18px;
+                      "
+                    >
+                      <a-row :gutter="[16, 16]" justify="start">
+                        <a-col v-for="keyword in subprojectForm.keywords">
+                          <div style="font-size: 16px; margin-right: 24px">
+                            <tag-outlined style="font-size: 20px" />
+                            {{ keyword.name }}
+                            <close-outlined
+                              style="font-size: 16px; color: #999"
+                              @click="handleKeywordClose(keyword.name)"
+                            />
+                          </div>
+                        </a-col>
+                      </a-row>
+                    </div>
                   </a-form-item>
                   <a-form-item label="子项目详情" name="description">
                     <a-textarea
@@ -120,6 +137,7 @@
           <!-- 目录 -->
           <div style="overflow: hidden; margin-top: 16px; height: 496px">
             <a-menu
+              v-model:selectedKeys="selectedKeys"
               mode="inline"
               style="
                 height: 100%;
@@ -158,9 +176,21 @@
         </a-layout-content>
       </a-layout>
     </a-layout-sider>
+
     <a-layout-content
       :style="{ marginLeft: '432px', background: 'rgb(245, 245, 245)' }"
     >
+      <div style="height: 0px">
+        <a-empty
+          style="padding-top: 240px"
+          image="https://gw.alipayobjects.com/mdn/miniapp_social/afts/img/A*pevERLJC9v0AAAAAAAAAAABjAQAAAQ/original"
+          :image-style="{ height: '140px' }"
+        >
+          <template #description>
+            <span style="font-size: 18px; color: #999">未选择子项目</span>
+          </template>
+        </a-empty>
+      </div>
       <router-view> </router-view>
     </a-layout-content>
   </a-layout>
@@ -203,6 +233,7 @@ export default defineComponent({
     const projectName = ref("");
 
     //新建类别
+    const createSubprojectLoading = ref(false);
     const createSubprojectVisible = ref(false);
     const showCreateSubproject = () => {
       resetSubrpojectForm();
@@ -213,11 +244,11 @@ export default defineComponent({
         .validateFields()
         .then(async () => {
           createSubprojectVisible.value = false;
-
+          createSubprojectLoading.value = true;
           await service.post("/subprojects", subprojectForm.value);
           message.success("子项目创建成功！");
+          createSubprojectLoading.value = false;
           searchSubprojects();
-
           resetSubrpojectForm();
         })
         .catch(() => {

@@ -1,5 +1,5 @@
 <template>
-  <a-layout style="min-height: 100vh">
+  <a-layout style="min-height: 100vh; margin-top: 0%">
     <!-- 案例内容 -->
     <a-layout-content
       :style="{
@@ -98,7 +98,7 @@
             >
             <template v-else>
               <a-typography-paragraph
-                style="font-size: 16px; white-space: pre-wrap"
+                style="font-size: 16px; white-space: pre-wrap; width: 80%"
               >
                 {{ subprojectForm.description }}</a-typography-paragraph
               >
@@ -142,7 +142,7 @@
                 >
                   <a-button>
                     <upload-outlined></upload-outlined>
-                    选择文件
+                    选择文件（≤20M）
                   </a-button>
                 </a-upload>
               </a-modal>
@@ -228,7 +228,9 @@
                   >生成</a-button
                 >
               </template>
-              <p>根据相似度计算，为您推荐以下相似方案：</p>
+              <p style="font-size: 16px">
+                根据相似度计算，为您推荐以下相似方案：
+              </p>
 
               <a-row :gutter="[16, 16]">
                 <a-col :span="8" v-for="plan in similarPlanList">
@@ -245,7 +247,7 @@
                       {{ plan.name }}
                     </template>
                     <a-typography-paragraph>
-                      {{ plan.description }}
+                      {{ `${plan.description.slice(0, 70)}...` }}
                     </a-typography-paragraph>
                   </a-card>
                 </a-col>

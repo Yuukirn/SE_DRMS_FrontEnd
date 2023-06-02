@@ -1,15 +1,21 @@
 <template>
-  <a-layout style="background-color: white; min-height: 100vh">
+  <a-layout style="min-height: 100vh; background-color: white">
     <a-page-header :title="document.name" @back="() => router.back()">
     </a-page-header>
-    <a-layout-content>
+    <a-layout-content
+      :style="{
+        background: '#fff',
+        overflow: 'initial',
+      }"
+    >
       <template v-if="document.type === 1 || document.type === 2">
         <vue-office-docx :src="src" />
       </template>
       <template v-if="document.type === 3">
         <vue-office-pdf :src="src" />
       </template>
-      <template v-else>
+      <template v-if="document.type === 4">
+        <a-divider style="background-color: rgb(171, 171, 171)" />
         <div style="white-space: pre-wrap; margin: 2%">{{ src }}</div>
       </template>
       <a-back-top />
